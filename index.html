@@ -380,6 +380,21 @@
             background: var(--primary-orange-hover);
         }
 
+        .btn-edit-product {
+            background: #ffffff;
+            color: var(--primary-orange);
+            border: 1px solid var(--primary-orange);
+            width: 100%;
+            padding: 0.6rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-edit-product:hover {
+            background: var(--orange-soft);
+        }
+
         /* Modal Carrito (Sidebar) */
         .cart-modal-overlay {
             position: fixed;
@@ -975,11 +990,11 @@
         </div>
     </div>
 
-    <!-- Modal para Agregar Nuevo Producto -->
+    <!-- Modal para Agregar o Editar Producto -->
     <div class="generic-modal" id="modal-producto">
         <div class="modal-content">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h3 style="font-weight: 800; font-size: 1.3rem;">Publicar Nuevo Producto</h3>
+                <h3 id="titulo-modal-producto" style="font-weight: 800; font-size: 1.3rem;">Publicar Nuevo Producto</h3>
                 <button class="close-btn" onclick="cerrarModalNuevoProducto()">&times;</button>
             </div>
 
@@ -1005,7 +1020,7 @@
                     <img id="img-preview" src="" alt="Previsualización" style="max-height: 120px; border-radius: 8px; border: 1px solid var(--border-color);">
                 </div>
 
-                <button type="submit" class="btn-submit">Publicar en la Tienda</button>
+                <button type="submit" id="btn-guardar-producto" class="btn-submit">Publicar en la Tienda</button>
             </form>
         </div>
     </div>
@@ -1120,7 +1135,7 @@
 
         const productosIniciales = [
             { id: 1, nombre: 'Taza Mágica Personalizada', precio: 5700, imagen: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=500&auto=format&fit=crop&q=60' },
-            { id: 2, nombre: 'Remera Spun Full Print', precio: 10000, imagen: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500&auto=format&fit=crop&q=60' },
+            { id: 2, nombre: 'Remera Spun Full Print', precio: 11000, imagen: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500&auto=format&fit=crop&q=60' },
             { id: 3, nombre: 'Mate Pampa Sublimado', precio: 6200, imagen: 'https://images.unsplash.com/photo-1577803645773-f96470509666?w=500&auto=format&fit=crop&q=60' },
             { id: 4, nombre: 'Llavero de Cuerina Sublimable', precio: 1500, imagen: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=500&auto=format&fit=crop&q=60' }
         ];
@@ -1130,6 +1145,7 @@
         let usuariosRegistrados = JSON.parse(localStorage.getItem('adl_usuarios')) || [];
         let usuarioActual = JSON.parse(localStorage.getItem('adl_usuario_activo')) || null;
         let previewImagenTemp = '';
+        let productoEditandoId = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             renderizarProductos();
@@ -1154,6 +1170,7 @@
                             <div class="product-price">$${prod.precio.toLocaleString('es-AR')}</div>
                         </div>
                         <div class="card-controls">
+                            ${tienePermisoCrearProducto() ? `<button class="btn-edit-product" onclick="editarProducto(${prod.id})">✏️ Editar producto</button>` : ''}
                             <div class="qty-selector">
                                 <button class="qty-btn" onclick="cambiarCantidadTarjeta(${prod.id}, -1)">-</button>
                                 <input type="number" id="qty-input-${prod.id}" class="qty-input" value="1" min="1" readonly>
@@ -1308,6 +1325,37 @@
                 mostrarToast("No tienes permisos para agregar productos.");
                 return;
             }
+            productoEditandoId = null;
+            document.getElementById('form-nuevo-producto').reset();
+            document.getElementById('titulo-modal-producto').innerText = 'Publicar Nuevo Producto';
+            document.getElementById('btn-guardar-producto').innerText = 'Publicar en la Tienda';
+            document.getElementById('preview-container').style.display = 'none';
+            previewImagenTemp = '';
+            document.getElementById('modal-producto').classList.add('active');
+        }
+
+        function editarProducto(productoId) {
+            if (!tienePermisoCrearProducto()) {
+                mostrarToast("No tienes permisos para editar productos.");
+                return;
+            }
+
+            const producto = productos.find(prod => prod.id === productoId);
+            if (!producto) {
+                mostrarToast("No se encontró el producto que quieres editar.");
+                return;
+            }
+
+            productoEditandoId = productoId;
+            document.getElementById('prod-nombre').value = producto.nombre;
+            document.getElementById('prod-precio').value = producto.precio;
+            document.getElementById('prod-img').value = '';
+            document.getElementById('prod-img-url').value = '';
+            previewImagenTemp = producto.imagen;
+            document.getElementById('img-preview').src = producto.imagen;
+            document.getElementById('preview-container').style.display = 'block';
+            document.getElementById('titulo-modal-producto').innerText = 'Editar Producto';
+            document.getElementById('btn-guardar-producto').innerText = 'Guardar Cambios';
             document.getElementById('modal-producto').classList.add('active');
         }
 
@@ -1316,6 +1364,9 @@
             document.getElementById('form-nuevo-producto').reset();
             document.getElementById('preview-container').style.display = 'none';
             previewImagenTemp = '';
+            productoEditandoId = null;
+            document.getElementById('titulo-modal-producto').innerText = 'Publicar Nuevo Producto';
+            document.getElementById('btn-guardar-producto').innerText = 'Publicar en la Tienda';
         }
 
         function previsualizarImagen(e) {
@@ -1347,23 +1398,40 @@
                 return;
             }
 
-            const nombre = document.getElementById('prod-nombre').value;
+            const nombre = document.getElementById('prod-nombre').value.trim();
             const precio = parseFloat(document.getElementById('prod-precio').value);
             const imgDefault = 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=500&auto=format&fit=crop&q=60';
+            const estabaEditando = productoEditandoId !== null;
 
-            const nuevoProd = {
-                id: Date.now(),
-                nombre: nombre,
-                precio: precio,
-                imagen: previewImagenTemp || imgDefault
-            };
+            if (!nombre || !Number.isFinite(precio) || precio < 0) {
+                mostrarToast("Ingresa un nombre y un precio válido para el producto.");
+                return;
+            }
 
-            productos.push(nuevoProd);
+            if (productoEditandoId !== null) {
+                const producto = productos.find(prod => prod.id === productoEditandoId);
+                if (!producto) {
+                    mostrarToast("No se encontró el producto que quieres editar.");
+                    return;
+                }
+                producto.nombre = nombre;
+                producto.precio = precio;
+                producto.imagen = previewImagenTemp || producto.imagen;
+            } else {
+                productos.push({
+                    id: Date.now(),
+                    nombre: nombre,
+                    precio: precio,
+                    imagen: previewImagenTemp || imgDefault
+                });
+            }
             localStorage.setItem('adl_productos', JSON.stringify(productos));
 
             renderizarProductos();
             cerrarModalNuevoProducto();
-            mostrarToast("¡Nuevo producto publicado correctamente!");
+            mostrarToast(!estabaEditando
+                ? "¡Nuevo producto publicado correctamente!"
+                : "¡Cambios guardados correctamente!");
         }
 
         /* --- CONTROL DE INICIO DE SESIÓN Y REGISTRO REDISEÑADO --- */
@@ -1533,6 +1601,8 @@
                 btnNuevo.style.display = 'none';
                 btnAdmin.style.display = 'none';
             }
+
+            renderizarProductos();
         }
 
         function abrirModalPanelAdmin() {
