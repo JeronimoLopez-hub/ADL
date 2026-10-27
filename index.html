@@ -48,25 +48,19 @@
         }
 
         .logo-container {
-            display: flex;
-            flex-direction: column;
+            display: inline-flex;
+            align-items: center;
             text-decoration: none;
+            flex-shrink: 0;
         }
 
-        .logo-main {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--primary-orange);
-            line-height: 1;
-            letter-spacing: -0.5px;
-        }
-
-        .logo-sub {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            letter-spacing: 2px;
-            text-transform: uppercase;
+        .logo-image {
+            display: block;
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: center;
         }
 
         .nav-links {
@@ -911,6 +905,7 @@
             .nav-links { display: none; }
             .hero h1 { font-size: 1.8rem; }
             .cart-drawer { max-width: 100%; }
+            .logo-image { width: 60px; height: 60px; }
         }
     </style>
 </head>
@@ -919,8 +914,7 @@
     <!-- Header / Navbar -->
     <header>
         <a href="#" class="logo-container">
-            <span class="logo-main">ADL</span>
-            <span class="logo-sub">Punto Creativo</span>
+            <img class="logo-image" src="logo-adl.jpg" alt="ADL Punto Creativo">
         </a>
 
         <ul class="nav-links">
