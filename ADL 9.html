@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADL Punto Creativo - Sublimados y Regalos Personalizados</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-orange: #f97316;
+            --primary-orange-hover: #ea580c;
+            --orange-light: #fff7ed;
+            --orange-soft: #ffedd5;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 10px 25px -5px rgba(249, 115, 22, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        header {
+            background: #ffffff;
+            padding: 0.8rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 3px solid var(--primary-orange);
+        }
+
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+        }
+
+        .logo-main {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-orange);
+            line-height: 1;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-sub {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-orange);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            background: #ffffff;
+            color: var(--primary-orange);
+            border: 2px solid var(--primary-orange);
+            padding: 0.45rem 0.9rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-action:hover {
+            background: var(--orange-soft);
+        }
+
+        .btn-admin {
+            background: #1e293b;
+            color: #ffffff;
+            border-color: #1e293b;
+        }
+
+        .btn-admin:hover {
+            background: #334155;
+            color: #ffffff;
+        }
+
+        .user-status {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary-orange);
+            background: var(--orange-light);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            border: 1px solid var(--orange-soft);
+        }
+
+        .cart-btn {
+            background: var(--primary-orange);
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .cart-btn:hover {
+            background: var(--primary-orange-hover);
+            transform: translateY(-2px);
+        }
+
+        .cart-count-badge {
+            background: white;
+            color: var(--primary-orange);
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 800;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #ffffff 0%, #fff7ed 100%);
+            color: var(--text-main);
+            text-align: center;
+            padding: 4.5rem 1.5rem;
+            border-bottom: 1px solid var(--orange-soft);
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+
+        .hero h1 span {
+            color: var(--primary-orange);
+            display: block;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            margin-bottom: 2rem;
+            color: var(--text-muted);
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-hero {
+            background: var(--primary-orange);
+            color: white;
+            padding: 0.9rem 2.2rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            box-shadow: 0 6px 20px rgba(249, 115, 22, 0.35);
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-hero:hover {
+            background: var(--primary-orange-hover);
+            transform: translateY(-3px);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-main);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 4px;
+            background: var(--primary-orange);
+            border-radius: 2px;
+            margin-top: 4px;
+        }
+
+        /* Grid de Productos */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-card:hover {
+            transform: translateY(-7px);
+            box-shadow: var(--shadow);
+            border-color: var(--orange-soft);
+        }
+
+        .product-img-wrap {
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+            background-color: #f1f5f9;
+            position: relative;
+        }
+
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .product-card:hover .product-img {
+            transform: scale(1.06);
+        }
+
+        .product-info {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            color: var(--text-main);
+        }
+
+        .product-price {
+            font-size: 1.35rem;
+            color: var(--primary-orange);
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .card-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .qty-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f8fafc;
+        }
+
+        .qty-btn {
+            background: transparent;
+            border: none;
+            width: 36px;
+            height: 36px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .qty-btn:hover {
+            background: var(--orange-soft);
+            color: var(--primary-orange);
+        }
+
+        .qty-input {
+            width: 45px;
+            text-align: center;
+            border: none;
+            background: transparent;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .btn-add {
+            background: var(--primary-orange);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-add:hover {
+            background: var(--primary-orange-hover);
+        }
+
+        /* Modal Carrito (Sidebar) */
+        .cart-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .cart-modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            right: -420px;
+            width: 100%;
+            max-width: 420px;
+            height: 100%;
+            background: white;
+            z-index: 2001;
+            box-shadow: -5px 0 25px rgba(0,0,0,0.15);
+            transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-modal-overlay.active .cart-drawer {
+            right: 0;
+        }
+
+        .drawer-header {
+            padding: 1.25rem 1.5rem;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .drawer-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: var(--primary-orange);
+        }
+
+        .drawer-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid #f1f5f9;
+            align-items: center;
+        }
+
+        .cart-item-img {
+            width: 65px;
+            height: 65px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #f1f5f9;
+        }
+
+        .cart-item-details {
+            flex-grow: 1;
+        }
+
+        .cart-item-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .cart-item-price {
+            font-size: 0.9rem;
+            color: var(--primary-orange);
+            font-weight: 700;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.3rem;
+        }
+
+        .btn-mini {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-mini:hover {
+            background: var(--orange-soft);
+        }
+
+        .btn-delete {
+            background: transparent;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.2rem;
+            transition: transform 0.2s;
+        }
+
+        .btn-delete:hover {
+            color: #dc2626;
+            transform: scale(1.1);
+        }
+
+        .drawer-footer {
+            padding: 1.5rem;
+            background: var(--orange-light);
+            border-top: 1px solid var(--orange-soft);
+        }
+
+        .cart-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .cart-total-label {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .cart-total-amount {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-orange);
+        }
+
+        .btn-checkout {
+            width: 100%;
+            background: #25d366;
+            color: white;
+            border: none;
+            padding: 0.9rem;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+            transition: background 0.2s;
+        }
+
+        .btn-checkout:hover {
+            background: #1eb956;
+        }
+
+        .cart-empty-msg {
+            text-align: center;
+            color: var(--text-muted);
+            margin-top: 3rem;
+        }
+
+        /* Modales Generales */
+        .generic-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 2500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .generic-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 480px;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .generic-modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.88rem;
+            margin-bottom: 0.4rem;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1.5px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #f8fafc;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-orange);
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+        }
+
+        .toggle-password-btn {
+            position: absolute;
+            right: 12px;
+            top: 36px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        .btn-submit {
+            background: var(--primary-orange);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 0.85rem;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 0.5rem;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-orange-hover);
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        /* Pestañas Auth Rediseñadas */
+        .auth-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-header h3 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .auth-header p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .auth-tabs-wrapper {
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 12px;
+            display: flex;
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 0.65rem;
+            text-align: center;
+            font-weight: 700;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            transition: all 0.25s ease;
+        }
+
+        .auth-tab.active {
+            background: #ffffff;
+            color: var(--primary-orange);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        /* Tabla de Control de Usuarios (Panel Permisos) */
+        .user-list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.9rem;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 0.75rem;
+            background: #f8fafc;
+        }
+
+        .user-info-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .user-email {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Switch Toggle */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1;
+            transition: .3s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-orange);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: #1e293b;
+            color: white;
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1), fadeOut 0.5s ease 2.5s forwards;
+            border-left: 4px solid var(--primary-orange);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; transform: translateY(10px); pointer-events: none; }
+        }
+
+        /* Footer & Contacto */
+        footer {
+            background: #1e293b;
+            color: white;
+            text-align: center;
+            padding: 3rem 1.5rem;
+            margin-top: 4rem;
+            border-top: 4px solid var(--primary-orange);
+        }
+
+        footer h3 {
+            color: var(--primary-orange);
+            font-size: 1.6rem;
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+        }
+
+        .contact-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+
+        .btn-contact {
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-contact-ws {
+            background: #25d366;
+            color: white;
+        }
+
+        .btn-contact-ws:hover {
+            background: #1eb956;
+            transform: translateY(-2px);
+        }
+
+        .btn-contact-ig {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: white;
+        }
+
+        .btn-contact-ig:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        footer p.copy {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 1rem;
+        }
+
+        @media(max-width: 768px) {
+            .nav-links { display: none; }
+            .hero h1 { font-size: 1.8rem; }
+            .cart-drawer { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Navbar -->
+    <header>
+        <a href="#" class="logo-container">
+            <span class="logo-main">ADL</span>
+            <span class="logo-sub">Punto Creativo</span>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="#">Inicio</a></li>
+            <li><a href="#catalogo">Catálogo</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+        </ul>
+
+        <div class="header-actions">
+            <span id="user-display" class="user-status" style="display: none;"></span>
+
+            <!-- Botón Panel de Usuarios (Solo visible para el Admin Principal) -->
+            <button class="btn-action btn-admin" id="admin-panel-btn" onclick="abrirModalPanelAdmin()" style="display: none;">
+                ⚙️ <span>Panel Permisos</span>
+            </button>
+
+            <!-- Botón Publicar Producto (Solo visible si tiene permiso) -->
+            <button class="btn-action" id="btn-nuevo-producto" onclick="abrirModalNuevoProducto()" style="display: none;">
+                ➕ <span>Nuevo</span>
+            </button>
+
+            <button class="btn-action" id="auth-btn" onclick="abrirModalAuth()">
+                🔑 <span id="auth-btn-text">Ingresar</span>
+            </button>
+
+            <button class="cart-btn" onclick="toggleCarrito()">
+                🛒 <span class="cart-count-badge" id="cart-count">0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Transformando ideas en productos únicos. <span>Personalizados.</span></h1>
+        <p>Hacemos realidad tus diseños en tazas, indumentaria, mates y regalos personalizados.</p>
+        <a href="#catalogo" class="btn-hero">Explorar Productos</a>
+    </section>
+
+    <!-- Catálogo de Productos -->
+    <main class="container" id="catalogo">
+        <div class="section-header">
+            <h2 class="section-title">Catálogo Destacado</h2>
+        </div>
+        
+        <div class="product-grid" id="product-grid"></div>
+    </main>
+
+    <!-- Modal Lateral del Carrito -->
+    <div class="cart-modal-overlay" id="cart-overlay" onclick="cerrarCarritoAlClickFuera(event)">
+        <div class="cart-drawer">
+            <div class="drawer-header">
+                <h3 class="drawer-title">Tu Carrito de Compras</h3>
+                <button class="close-btn" onclick="toggleCarrito()">&times;</button>
+            </div>
+            
+            <div class="drawer-body" id="cart-items-container"></div>
+
+            <div class="drawer-footer">
+                <div class="cart-total-row">
+                    <span class="cart-total-label">Total Estimado:</span>
+                    <span class="cart-total-amount" id="cart-total">$0</span>
+                </div>
+                <button class="btn-checkout" onclick="enviarPedidoWhatsApp()">
+                    📱 Realizar Pedido por WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar Nuevo Producto -->
+    <div class="generic-modal" id="modal-producto">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="font-weight: 800; font-size: 1.3rem;">Publicar Nuevo Producto</h3>
+                <button class="close-btn" onclick="cerrarModalNuevoProducto()">&times;</button>
+            </div>
+
+            <form id="form-nuevo-producto" onsubmit="guardarNuevoProducto(event)">
+                <div class="form-group">
+                    <label for="prod-nombre">Nombre del Producto</label>
+                    <input type="text" id="prod-nombre" class="form-control" placeholder="Ej. Remera Personalizada" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="prod-precio">Precio ($ ARS)</label>
+                    <input type="number" id="prod-precio" class="form-control" placeholder="Ej. 4500" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="prod-img">Imagen del Producto</label>
+                    <input type="file" id="prod-img" class="form-control" accept="image/*" onchange="previsualizarImagen(event)">
+                    <small style="color: var(--text-muted); display: block; margin-top: 4px;">O introduce URL de una imagen:</small>
+                    <input type="url" id="prod-img-url" class="form-control" style="margin-top: 4px;" placeholder="https://ejemplo.com/imagen.jpg" oninput="previsualizarUrl(event)">
+                </div>
+
+                <div style="text-align: center; margin-bottom: 1rem; display: none;" id="preview-container">
+                    <img id="img-preview" src="" alt="Previsualización" style="max-height: 120px; border-radius: 8px; border: 1px solid var(--border-color);">
+                </div>
+
+                <button type="submit" class="btn-submit">Publicar en la Tienda</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Autenticación (REDISEÑADO) -->
+    <div class="generic-modal" id="modal-auth">
+        <div class="modal-content">
+            <button class="close-btn" onclick="cerrarModalAuth()" style="position: absolute; right: 1.5rem; top: 1.5rem;">&times;</button>
+
+            <div class="auth-header">
+                <h3 id="auth-header-title">¡Bienvenido a ADL!</h3>
+                <p id="auth-header-subtitle">Ingresa con tus credenciales para continuar</p>
+            </div>
+
+            <div class="auth-tabs-wrapper">
+                <button class="auth-tab active" id="tab-login" onclick="cambiarModoAuth('login')">Iniciar Sesión</button>
+                <button class="auth-tab" id="tab-register" onclick="cambiarModoAuth('register')">Crear Cuenta</button>
+            </div>
+
+            <!-- Formulario Iniciar Sesión -->
+            <form id="form-login" onsubmit="procesarAuth(event, 'login')">
+                <div class="form-group">
+                    <label for="login-email">Correo Electrónico</label>
+                    <input type="email" id="login-email" class="form-control" placeholder="nombre@ejemplo.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password">Contraseña</label>
+                    <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+                    <button type="button" class="toggle-password-btn" onclick="toggleMostrarPassword('login-password', this)">👁️</button>
+                </div>
+
+                <button type="submit" class="btn-submit">Iniciar Sesión</button>
+            </form>
+
+            <!-- Formulario Crear Cuenta -->
+            <form id="form-register" onsubmit="procesarAuth(event, 'register')" style="display: none;">
+                <div class="form-group">
+                    <label for="reg-nombre">Nombre y Apellido</label>
+                    <input type="text" id="reg-nombre" class="form-control" placeholder="Juan Pérez" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-email">Correo Electrónico</label>
+                    <input type="email" id="reg-email" class="form-control" placeholder="nombre@ejemplo.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-password">Contraseña</label>
+                    <input type="password" id="reg-password" class="form-control" placeholder="Mínimo 6 caracteres" minlength="6" required>
+                    <button type="button" class="toggle-password-btn" onclick="toggleMostrarPassword('reg-password', this)">👁️</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-password-confirm">Confirmar Contraseña</label>
+                    <input type="password" id="reg-password-confirm" class="form-control" placeholder="Repite tu contraseña" required>
+                </div>
+
+                <button type="submit" class="btn-submit">Crear Mi Cuenta</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Panel de Administración (Gestión de Permisos de Usuarios) -->
+    <div class="generic-modal" id="modal-admin">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <div>
+                    <h3 style="font-weight: 800; font-size: 1.3rem;">Control de Permisos</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Activa la opción para permitir a los usuarios publicar productos.</p>
+                </div>
+                <button class="close-btn" onclick="cerrarModalPanelAdmin()">&times;</button>
+            </div>
+
+            <div id="admin-user-list"></div>
+        </div>
+    </div>
+
+    <!-- Formulario oculto para envío por Email -->
+    <form id="formsubmit-hidden" action="https://formsubmit.co/lopezjero203@gmail.com" method="POST" target="hidden_iframe" style="display: none;">
+        <input type="text" name="_subject" id="fs-subject" value="Nuevo Evento de Usuario">
+        <input type="text" name="Tipo_de_Evento" id="fs-tipo">
+        <input type="text" name="Nombre" id="fs-nombre">
+        <input type="email" name="Email" id="fs-email">
+        <input type="text" name="Fecha_Hora" id="fs-fecha">
+        <input type="hidden" name="_captcha" value="false">
+    </form>
+    <iframe name="hidden_iframe" style="display: none;"></iframe>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Footer / Contacto -->
+    <footer id="contacto">
+        <h3>ADL Punto Creativo</h3>
+        <p>¿Tenés alguna consulta o querés personalizar tu producto?</p>
+        
+        <div class="contact-buttons">
+            <a href="https://wa.me/5493498437419" target="_blank" class="btn-contact btn-contact-ws">
+                📱 WhatsApp: 3498 437419
+            </a>
+            <a href="https://instagram.com/punto_creativo.sj" target="_blank" class="btn-contact btn-contact-ig">
+                📸 Instagram: @punto_creativo.sj
+            </a>
+        </div>
+
+        <p class="copy">&copy; 2026 ADL Punto Creativo. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- Lógica de JavaScript -->
+    <script>
+        const ADMIN_EMAIL = 'lopezjero203@gmail.com';
+
+        const productosIniciales = [
+            { id: 1, nombre: 'Taza Mágica Personalizada', precio: 4500, imagen: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=500&auto=format&fit=crop&q=60' },
+            { id: 2, nombre: 'Remera Spun Full Print', precio: 10000, imagen: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500&auto=format&fit=crop&q=60' },
+            { id: 3, nombre: 'Mate Pampa Sublimado', precio: 6200, imagen: 'https://images.unsplash.com/photo-1577803645773-f96470509666?w=500&auto=format&fit=crop&q=60' },
+            { id: 4, nombre: 'Llavero de Cuerina Sublimable', precio: 1500, imagen: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=500&auto=format&fit=crop&q=60' }
+        ];
+
+        let productos = JSON.parse(localStorage.getItem('adl_productos')) || productosIniciales;
+        let carrito = JSON.parse(localStorage.getItem('adl_carrito')) || [];
+        let usuariosRegistrados = JSON.parse(localStorage.getItem('adl_usuarios')) || [];
+        let usuarioActual = JSON.parse(localStorage.getItem('adl_usuario_activo')) || null;
+        let previewImagenTemp = '';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderizarProductos();
+            actualizarCarritoUI();
+            actualizarUsuarioUI();
+        });
+
+        function renderizarProductos() {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = '';
+
+            productos.forEach(prod => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="product-img-wrap">
+                        <img src="${prod.imagen}" alt="${prod.nombre}" class="product-img" onerror="this.src='https://via.placeholder.com/300x200?text=Imagen+no+disponible'">
+                    </div>
+                    <div class="product-info">
+                        <div>
+                            <h3 class="product-title">${prod.nombre}</h3>
+                            <div class="product-price">$${prod.precio.toLocaleString('es-AR')}</div>
+                        </div>
+                        <div class="card-controls">
+                            <div class="qty-selector">
+                                <button class="qty-btn" onclick="cambiarCantidadTarjeta(${prod.id}, -1)">-</button>
+                                <input type="number" id="qty-input-${prod.id}" class="qty-input" value="1" min="1" readonly>
+                                <button class="qty-btn" onclick="cambiarCantidadTarjeta(${prod.id}, 1)">+</button>
+                            </div>
+                            <button class="btn-add" onclick="agregarAlCarrito(${prod.id})">
+                                🛒 Agregar al Carrito
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function cambiarCantidadTarjeta(prodId, cambio) {
+            const input = document.getElementById(`qty-input-${prodId}`);
+            let val = parseInt(input.value) + cambio;
+            if (val < 1) val = 1;
+            input.value = val;
+        }
+
+        function agregarAlCarrito(prodId) {
+            const producto = productos.find(p => p.id === prodId);
+            const inputQty = document.getElementById(`qty-input-${prodId}`);
+            const cantidad = parseInt(inputQty.value) || 1;
+
+            const itemExistente = carrito.find(item => item.id === prodId);
+
+            if (itemExistente) {
+                itemExistente.cantidad += cantidad;
+            } else {
+                carrito.push({
+                    id: producto.id,
+                    nombre: producto.nombre,
+                    precio: producto.precio,
+                    imagen: producto.imagen,
+                    cantidad: cantidad
+                });
+            }
+
+            inputQty.value = 1;
+            guardarCarrito();
+            actualizarCarritoUI();
+            mostrarToast(`Agregaste ${cantidad}x "${producto.nombre}" al carrito`);
+        }
+
+        function modificarCantidadCarrito(prodId, cambio) {
+            const item = carrito.find(i => i.id === prodId);
+            if (!item) return;
+
+            item.cantidad += cambio;
+
+            if (item.cantidad <= 0) {
+                eliminarDelCarrito(prodId);
+            } else {
+                guardarCarrito();
+                actualizarCarritoUI();
+            }
+        }
+
+        function eliminarDelCarrito(prodId) {
+            carrito = carrito.filter(i => i.id !== prodId);
+            guardarCarrito();
+            actualizarCarritoUI();
+            mostrarToast("Producto eliminado del carrito");
+        }
+
+        function guardarCarrito() {
+            localStorage.setItem('adl_carrito', JSON.stringify(carrito));
+        }
+
+        function actualizarCarritoUI() {
+            const container = document.getElementById('cart-items-container');
+            const countBadge = document.getElementById('cart-count');
+            const totalElement = document.getElementById('cart-total');
+
+            const totalItems = carrito.reduce((acc, item) => acc + item.cantidad, 0);
+            const totalMonto = carrito.reduce((acc, item) => acc + (item.precio * item.cantidad), 0);
+
+            countBadge.innerText = totalItems;
+            totalElement.innerText = `$${totalMonto.toLocaleString('es-AR')}`;
+
+            if (carrito.length === 0) {
+                container.innerHTML = `
+                    <div class="cart-empty-msg">
+                        <p style="font-size: 3rem; margin-bottom: 0.5rem;">🛍️</p>
+                        <p style="font-weight: 600;">Tu carrito está vacío</p>
+                        <p style="font-size: 0.85rem; margin-top: 0.2rem;">¡Agrega productos del catálogo!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            carrito.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'cart-item';
+                itemEl.innerHTML = `
+                    <img src="${item.imagen}" class="cart-item-img" alt="${item.nombre}">
+                    <div class="cart-item-details">
+                        <div class="cart-item-title">${item.nombre}</div>
+                        <div class="cart-item-price">$${(item.precio * item.cantidad).toLocaleString('es-AR')}</div>
+                        <div class="cart-item-controls">
+                            <button class="btn-mini" onclick="modificarCantidadCarrito(${item.id}, -1)">-</button>
+                            <span style="font-size: 0.85rem; font-weight: bold;">${item.cantidad}</span>
+                            <button class="btn-mini" onclick="modificarCantidadCarrito(${item.id}, 1)">+</button>
+                        </div>
+                    </div>
+                    <button class="btn-delete" onclick="eliminarDelCarrito(${item.id})" title="Eliminar">🗑️</button>
+                `;
+                container.appendChild(itemEl);
+            });
+        }
+
+        function toggleCarrito() {
+            document.getElementById('cart-overlay').classList.toggle('active');
+        }
+
+        function cerrarCarritoAlClickFuera(e) {
+            if (e.target.id === 'cart-overlay') {
+                toggleCarrito();
+            }
+        }
+
+        function enviarPedidoWhatsApp() {
+            if (carrito.length === 0) {
+                mostrarToast("Tu carrito está vacío");
+                return;
+            }
+
+            let mensaje = "¡Hola ADL Punto Creativo! 👋 Quisiera realizar el siguiente pedido:\n\n";
+            let total = 0;
+
+            carrito.forEach(item => {
+                const subtotal = item.precio * item.cantidad;
+                total += subtotal;
+                mensaje += `• ${item.cantidad}x ${item.nombre} - $${subtotal.toLocaleString('es-AR')}\n`;
+            });
+
+            mensaje += `\n*Monto Total:* $${total.toLocaleString('es-AR')}`;
+            if (usuarioActual) {
+                mensaje += `\n*Cliente:* ${usuarioActual.nombre} (${usuarioActual.email})`;
+            }
+
+            const url = `https://wa.me/5493498437419?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+        }
+
+        function abrirModalNuevoProducto() {
+            if (!tienePermisoCrearProducto()) {
+                mostrarToast("No tienes permisos para agregar productos.");
+                return;
+            }
+            document.getElementById('modal-producto').classList.add('active');
+        }
+
+        function cerrarModalNuevoProducto() {
+            document.getElementById('modal-producto').classList.remove('active');
+            document.getElementById('form-nuevo-producto').reset();
+            document.getElementById('preview-container').style.display = 'none';
+            previewImagenTemp = '';
+        }
+
+        function previsualizarImagen(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    previewImagenTemp = event.target.result;
+                    document.getElementById('img-preview').src = previewImagenTemp;
+                    document.getElementById('preview-container').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function previsualizarUrl(e) {
+            const url = e.target.value;
+            if (url) {
+                previewImagenTemp = url;
+                document.getElementById('img-preview').src = url;
+                document.getElementById('preview-container').style.display = 'block';
+            }
+        }
+
+        function guardarNuevoProducto(e) {
+            e.preventDefault();
+            if (!tienePermisoCrearProducto()) {
+                mostrarToast("Acción no autorizada");
+                return;
+            }
+
+            const nombre = document.getElementById('prod-nombre').value;
+            const precio = parseFloat(document.getElementById('prod-precio').value);
+            const imgDefault = 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=500&auto=format&fit=crop&q=60';
+
+            const nuevoProd = {
+                id: Date.now(),
+                nombre: nombre,
+                precio: precio,
+                imagen: previewImagenTemp || imgDefault
+            };
+
+            productos.push(nuevoProd);
+            localStorage.setItem('adl_productos', JSON.stringify(productos));
+
+            renderizarProductos();
+            cerrarModalNuevoProducto();
+            mostrarToast("¡Nuevo producto publicado correctamente!");
+        }
+
+        /* --- CONTROL DE INICIO DE SESIÓN Y REGISTRO REDISEÑADO --- */
+        function abrirModalAuth() {
+            if (usuarioActual) {
+                usuarioActual = null;
+                localStorage.removeItem('adl_usuario_activo');
+                actualizarUsuarioUI();
+                mostrarToast("Has cerrado sesión correctamente");
+            } else {
+                document.getElementById('modal-auth').classList.add('active');
+            }
+        }
+
+        function cerrarModalAuth() {
+            document.getElementById('modal-auth').classList.remove('active');
+        }
+
+        function cambiarModoAuth(modo) {
+            const tabLogin = document.getElementById('tab-login');
+            const tabRegister = document.getElementById('tab-register');
+            const formLogin = document.getElementById('form-login');
+            const formRegister = document.getElementById('form-register');
+
+            const title = document.getElementById('auth-header-title');
+            const subtitle = document.getElementById('auth-header-subtitle');
+
+            if (modo === 'login') {
+                tabLogin.classList.add('active');
+                tabRegister.classList.remove('active');
+                formLogin.style.display = 'block';
+                formRegister.style.display = 'none';
+
+                title.innerText = "¡Bienvenido a ADL!";
+                subtitle.innerText = "Ingresa con tus credenciales para continuar";
+            } else {
+                tabRegister.classList.add('active');
+                tabLogin.classList.remove('active');
+                formRegister.style.display = 'block';
+                formLogin.style.display = 'none';
+
+                title.innerText = "Crear Cuenta Nueva";
+                subtitle.innerText = "Únete para guardar tu información e interactuar";
+            }
+        }
+
+        function toggleMostrarPassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.innerText = '🙈';
+            } else {
+                input.type = 'password';
+                btn.innerText = '👁️';
+            }
+        }
+
+        function procesarAuth(e, modo) {
+            e.preventDefault();
+
+            if (modo === 'register') {
+                const nombre = document.getElementById('reg-nombre').value.trim();
+                const email = document.getElementById('reg-email').value.toLowerCase().trim();
+                const password = document.getElementById('reg-password').value;
+                const passwordConfirm = document.getElementById('reg-password-confirm').value;
+
+                if (password !== passwordConfirm) {
+                    mostrarToast("Las contraseñas no coinciden. Inténtalo de nuevo.");
+                    return;
+                }
+
+                const existe = usuariosRegistrados.find(u => u.email === email);
+                if (existe) {
+                    mostrarToast("El correo ya se encuentra registrado. Inicia sesión.");
+                    return;
+                }
+
+                const canAddProduct = (email === ADMIN_EMAIL);
+                const nuevoUsuario = { nombre, email, password, canAddProduct };
+                
+                usuariosRegistrados.push(nuevoUsuario);
+                localStorage.setItem('adl_usuarios', JSON.stringify(usuariosRegistrados));
+
+                usuarioActual = { nombre, email, canAddProduct };
+                localStorage.setItem('adl_usuario_activo', JSON.stringify(usuarioActual));
+
+                enviarNotificacionEmail("Registro de Nuevo Usuario", nombre, email);
+
+                cerrarModalAuth();
+                actualizarUsuarioUI();
+                mostrarToast(`¡Bienvenido/a, ${nombre}! Cuenta registrada.`);
+
+            } else if (modo === 'login') {
+                const email = document.getElementById('login-email').value.toLowerCase().trim();
+                const password = document.getElementById('login-password').value;
+
+                const usuario = usuariosRegistrados.find(u => u.email === email);
+
+                if (!usuario) {
+                    mostrarToast("No existe cuenta con este correo. Por favor, regístrate.");
+                    return;
+                }
+
+                if (usuario.password !== password) {
+                    mostrarToast("Contraseña incorrecta. Verifica los datos.");
+                    return;
+                }
+
+                if (usuario.email === ADMIN_EMAIL) {
+                    usuario.canAddProduct = true;
+                }
+
+                usuarioActual = { nombre: usuario.nombre, email: usuario.email, canAddProduct: usuario.canAddProduct };
+                localStorage.setItem('adl_usuario_activo', JSON.stringify(usuarioActual));
+
+                enviarNotificacionEmail("Inicio de Sesión Exitoso", usuario.nombre, usuario.email);
+
+                cerrarModalAuth();
+                actualizarUsuarioUI();
+                mostrarToast(`¡Hola de nuevo, ${usuario.nombre}!`);
+            }
+        }
+
+        function tienePermisoCrearProducto() {
+            if (!usuarioActual) return false;
+            if (usuarioActual.email === ADMIN_EMAIL) return true;
+            
+            const userDB = usuariosRegistrados.find(u => u.email === usuarioActual.email);
+            return userDB ? !!userDB.canAddProduct : false;
+        }
+
+        function enviarNotificacionEmail(tipoEvento, nombre, email) {
+            document.getElementById('fs-subject').value = `ADL Punto Creativo: ${tipoEvento}`;
+            document.getElementById('fs-tipo').value = tipoEvento;
+            document.getElementById('fs-nombre').value = nombre;
+            document.getElementById('fs-email').value = email;
+            document.getElementById('fs-fecha').value = new Date().toLocaleString();
+            document.getElementById('formsubmit-hidden').submit();
+        }
+
+        function actualizarUsuarioUI() {
+            const userDisplay = document.getElementById('user-display');
+            const authBtnText = document.getElementById('auth-btn-text');
+            const btnNuevo = document.getElementById('btn-nuevo-producto');
+            const btnAdmin = document.getElementById('admin-panel-btn');
+
+            if (usuarioActual) {
+                userDisplay.innerText = `👤 ${usuarioActual.nombre}`;
+                userDisplay.style.display = 'inline-block';
+                authBtnText.innerText = 'Salir';
+
+                if (tienePermisoCrearProducto()) {
+                    btnNuevo.style.display = 'flex';
+                } else {
+                    btnNuevo.style.display = 'none';
+                }
+
+                if (usuarioActual.email === ADMIN_EMAIL) {
+                    btnAdmin.style.display = 'flex';
+                } else {
+                    btnAdmin.style.display = 'none';
+                }
+
+            } else {
+                userDisplay.style.display = 'none';
+                authBtnText.innerText = 'Ingresar';
+                btnNuevo.style.display = 'none';
+                btnAdmin.style.display = 'none';
+            }
+        }
+
+        function abrirModalPanelAdmin() {
+            if (!usuarioActual || usuarioActual.email !== ADMIN_EMAIL) {
+                mostrarToast("Acceso reservado únicamente al Administrador Principal.");
+                return;
+            }
+
+            renderizarListaUsuariosAdmin();
+            document.getElementById('modal-admin').classList.add('active');
+        }
+
+        function cerrarModalPanelAdmin() {
+            document.getElementById('modal-admin').classList.remove('active');
+        }
+
+        function renderizarListaUsuariosAdmin() {
+            const container = document.getElementById('admin-user-list');
+            container.innerHTML = '';
+
+            if (usuariosRegistrados.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">No hay usuarios registrados aún.</p>';
+                return;
+            }
+
+            usuariosRegistrados.forEach(usr => {
+                const isMainAdmin = (usr.email === ADMIN_EMAIL);
+                const item = document.createElement('div');
+                item.className = 'user-list-item';
+                item.innerHTML = `
+                    <div class="user-info-text">
+                        <span class="user-name">${usr.nombre} ${isMainAdmin ? '👑 (Admin)' : ''}</span>
+                        <span class="user-email">${usr.email}</span>
+                    </div>
+                    <div>
+                        <label class="switch">
+                            <input type="checkbox" ${usr.canAddProduct || isMainAdmin ? 'checked' : ''} ${isMainAdmin ? 'disabled' : ''} onchange="togglePermisoUsuario('${usr.email}', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function togglePermisoUsuario(email, permitido) {
+            const usr = usuariosRegistrados.find(u => u.email === email);
+            if (usr) {
+                usr.canAddProduct = permitido;
+                localStorage.setItem('adl_usuarios', JSON.stringify(usuariosRegistrados));
+                mostrarToast(`Permisos actualizados para ${usr.nombre}`);
+
+                if (usuarioActual && usuarioActual.email === email) {
+                    usuarioActual.canAddProduct = permitido;
+                    localStorage.setItem('adl_usuario_activo', JSON.stringify(usuarioActual));
+                    actualizarUsuarioUI();
+                }
+            }
+        }
+
+        function mostrarToast(mensaje) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `✨ <span>${mensaje}</span>`;
+            
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
