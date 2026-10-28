@@ -1131,8 +1131,6 @@
 
     <!-- Lógica de JavaScript -->
     <script>
-        const ADMIN_EMAIL = 'lopezjero203@gmail.com';
-
         const productosIniciales = [
             { id: 1, nombre: 'Taza Mágica Personalizada', precio: 5700, imagen: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=500&auto=format&fit=crop&q=60' },
             { id: 2, nombre: 'Remera Spun Full Print', precio: 14000, imagen: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500&auto=format&fit=crop&q=60' },
@@ -1142,16 +1140,46 @@
 
         let productos = JSON.parse(localStorage.getItem('adl_productos')) || productosIniciales;
         let carrito = JSON.parse(localStorage.getItem('adl_carrito')) || [];
-        let usuariosRegistrados = JSON.parse(localStorage.getItem('adl_usuarios')) || [];
-        let usuarioActual = JSON.parse(localStorage.getItem('adl_usuario_activo')) || null;
+        let usuariosRegistrados = [];
+        let usuarioActual = null;
         let previewImagenTemp = '';
         let productoEditandoId = null;
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             renderizarProductos();
             actualizarCarritoUI();
+            try {
+                const respuesta = await solicitarAPI('/api/auth/me');
+                usuarioActual = respuesta.user;
+            } catch (error) {
+                mostrarToast(`No se pudo conectar con el servicio de usuarios: ${error.message}`);
+            }
             actualizarUsuarioUI();
         });
+
+        async function solicitarAPI(ruta, opciones = {}) {
+            const { headers = {}, ...opcionesFetch } = opciones;
+            const respuesta = await fetch(ruta, {
+                credentials: 'same-origin',
+                ...opcionesFetch,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...headers
+                }
+            });
+            let datos;
+            try {
+                datos = await respuesta.json();
+            } catch {
+                throw new Error('El servidor no devolvió una respuesta válida. Abre el sitio desde el servidor Node.js.');
+            }
+
+            if (!respuesta.ok) {
+                throw new Error(datos.error || 'No se pudo completar la solicitud.');
+            }
+
+            return datos;
+        }
 
         function renderizarProductos() {
             const grid = document.getElementById('product-grid');
@@ -1435,12 +1463,16 @@
         }
 
         /* --- CONTROL DE INICIO DE SESIÓN Y REGISTRO REDISEÑADO --- */
-        function abrirModalAuth() {
+        async function abrirModalAuth() {
             if (usuarioActual) {
-                usuarioActual = null;
-                localStorage.removeItem('adl_usuario_activo');
-                actualizarUsuarioUI();
-                mostrarToast("Has cerrado sesión correctamente");
+                try {
+                    await solicitarAPI('/api/auth/logout', { method: 'POST' });
+                    usuarioActual = null;
+                    actualizarUsuarioUI();
+                    mostrarToast("Has cerrado sesión correctamente");
+                } catch (error) {
+                    mostrarToast(error.message);
+                }
             } else {
                 document.getElementById('modal-auth').classList.add('active');
             }
@@ -1489,10 +1521,12 @@
             }
         }
 
-        function procesarAuth(e, modo) {
+        async function procesarAuth(e, modo) {
             e.preventDefault();
+            const esRegistro = modo === 'register';
+            let datos;
 
-            if (modo === 'register') {
+            if (esRegistro) {
                 const nombre = document.getElementById('reg-nombre').value.trim();
                 const email = document.getElementById('reg-email').value.toLowerCase().trim();
                 const password = document.getElementById('reg-password').value;
@@ -1503,64 +1537,44 @@
                     return;
                 }
 
-                const existe = usuariosRegistrados.find(u => u.email === email);
-                if (existe) {
-                    mostrarToast("El correo ya se encuentra registrado. Inicia sesión.");
-                    return;
-                }
-
-                const canAddProduct = (email === ADMIN_EMAIL);
-                const nuevoUsuario = { nombre, email, password, canAddProduct };
-                
-                usuariosRegistrados.push(nuevoUsuario);
-                localStorage.setItem('adl_usuarios', JSON.stringify(usuariosRegistrados));
-
-                usuarioActual = { nombre, email, canAddProduct };
-                localStorage.setItem('adl_usuario_activo', JSON.stringify(usuarioActual));
-
-                enviarNotificacionEmail("Registro de Nuevo Usuario", nombre, email);
-
-                cerrarModalAuth();
-                actualizarUsuarioUI();
-                mostrarToast(`¡Bienvenido/a, ${nombre}! Cuenta registrada.`);
-
+                datos = { nombre, email, password };
             } else if (modo === 'login') {
-                const email = document.getElementById('login-email').value.toLowerCase().trim();
-                const password = document.getElementById('login-password').value;
+                datos = {
+                    email: document.getElementById('login-email').value.toLowerCase().trim(),
+                    password: document.getElementById('login-password').value
+                };
+            } else {
+                mostrarToast("Tipo de autenticación no válido.");
+                return;
+            }
 
-                const usuario = usuariosRegistrados.find(u => u.email === email);
+            const formulario = document.getElementById(esRegistro ? 'form-register' : 'form-login');
 
-                if (!usuario) {
-                    mostrarToast("No existe cuenta con este correo. Por favor, regístrate.");
-                    return;
+            try {
+                const respuesta = await solicitarAPI(`/api/auth/${esRegistro ? 'register' : 'login'}`, {
+                    method: 'POST',
+                    body: JSON.stringify(datos)
+                });
+                usuarioActual = respuesta.user;
+                formulario.reset();
+                if (esRegistro) {
+                    enviarNotificacionEmail("Registro de Nuevo Usuario", usuarioActual.nombre, usuarioActual.email);
+                } else {
+                    enviarNotificacionEmail("Inicio de Sesión Exitoso", usuarioActual.nombre, usuarioActual.email);
                 }
-
-                if (usuario.password !== password) {
-                    mostrarToast("Contraseña incorrecta. Verifica los datos.");
-                    return;
-                }
-
-                if (usuario.email === ADMIN_EMAIL) {
-                    usuario.canAddProduct = true;
-                }
-
-                usuarioActual = { nombre: usuario.nombre, email: usuario.email, canAddProduct: usuario.canAddProduct };
-                localStorage.setItem('adl_usuario_activo', JSON.stringify(usuarioActual));
-
-                enviarNotificacionEmail("Inicio de Sesión Exitoso", usuario.nombre, usuario.email);
-
                 cerrarModalAuth();
                 actualizarUsuarioUI();
-                mostrarToast(`¡Hola de nuevo, ${usuario.nombre}!`);
+                mostrarToast(esRegistro
+                    ? `¡Bienvenido/a, ${usuarioActual.nombre}! Cuenta registrada.`
+                    : `¡Hola de nuevo, ${usuarioActual.nombre}!`);
+            } catch (error) {
+                mostrarToast(error.message);
             }
         }
 
         function tienePermisoCrearProducto() {
             if (!usuarioActual) return false;
-            if (usuarioActual.email === ADMIN_EMAIL) return true;
-            
-            const userDB = usuariosRegistrados.find(u => u.email === usuarioActual.email);
-            return userDB ? !!userDB.canAddProduct : false;
+            return usuarioActual.role === 'admin' || !!usuarioActual.canAddProduct;
         }
 
         function enviarNotificacionEmail(tipoEvento, nombre, email) {
@@ -1589,7 +1603,7 @@
                     btnNuevo.style.display = 'none';
                 }
 
-                if (usuarioActual.email === ADMIN_EMAIL) {
+                if (usuarioActual.role === 'admin') {
                     btnAdmin.style.display = 'flex';
                 } else {
                     btnAdmin.style.display = 'none';
@@ -1606,7 +1620,7 @@
         }
 
         function abrirModalPanelAdmin() {
-            if (!usuarioActual || usuarioActual.email !== ADMIN_EMAIL) {
+            if (!usuarioActual || usuarioActual.role !== 'admin') {
                 mostrarToast("Acceso reservado únicamente al Administrador Principal.");
                 return;
             }
@@ -1619,47 +1633,71 @@
             document.getElementById('modal-admin').classList.remove('active');
         }
 
-        function renderizarListaUsuariosAdmin() {
+        async function renderizarListaUsuariosAdmin() {
             const container = document.getElementById('admin-user-list');
             container.innerHTML = '';
 
-            if (usuariosRegistrados.length === 0) {
-                container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">No hay usuarios registrados aún.</p>';
-                return;
-            }
+            try {
+                const respuesta = await solicitarAPI('/api/users');
+                usuariosRegistrados = respuesta.users;
+                if (usuariosRegistrados.length === 0) {
+                    container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">No hay usuarios registrados aún.</p>';
+                    return;
+                }
 
-            usuariosRegistrados.forEach(usr => {
-                const isMainAdmin = (usr.email === ADMIN_EMAIL);
-                const item = document.createElement('div');
-                item.className = 'user-list-item';
-                item.innerHTML = `
-                    <div class="user-info-text">
-                        <span class="user-name">${usr.nombre} ${isMainAdmin ? '👑 (Admin)' : ''}</span>
-                        <span class="user-email">${usr.email}</span>
-                    </div>
-                    <div>
-                        <label class="switch">
-                            <input type="checkbox" ${usr.canAddProduct || isMainAdmin ? 'checked' : ''} ${isMainAdmin ? 'disabled' : ''} onchange="togglePermisoUsuario('${usr.email}', this.checked)">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
+                usuariosRegistrados.forEach(usr => {
+                    const esAdmin = usr.role === 'admin';
+                    const item = document.createElement('div');
+                    item.className = 'user-list-item';
+
+                    const info = document.createElement('div');
+                    info.className = 'user-info-text';
+                    const nombre = document.createElement('span');
+                    nombre.className = 'user-name';
+                    nombre.textContent = `${usr.nombre}${esAdmin ? ' 👑 (Admin)' : ''}`;
+                    const email = document.createElement('span');
+                    email.className = 'user-email';
+                    email.textContent = usr.email;
+                    info.append(nombre, email);
+
+                    const controles = document.createElement('div');
+                    const label = document.createElement('label');
+                    label.className = 'switch';
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.checked = !!usr.canAddProduct || esAdmin;
+                    checkbox.disabled = esAdmin;
+                    checkbox.addEventListener('change', () => togglePermisoUsuario(usr.id, checkbox.checked));
+                    const slider = document.createElement('span');
+                    slider.className = 'slider';
+                    label.append(checkbox, slider);
+                    controles.appendChild(label);
+                    item.append(info, controles);
+                    container.appendChild(item);
+                });
+            } catch (error) {
+                container.textContent = error.message;
+                mostrarToast(error.message);
+            }
         }
 
-        function togglePermisoUsuario(email, permitido) {
-            const usr = usuariosRegistrados.find(u => u.email === email);
-            if (usr) {
-                usr.canAddProduct = permitido;
-                localStorage.setItem('adl_usuarios', JSON.stringify(usuariosRegistrados));
-                mostrarToast(`Permisos actualizados para ${usr.nombre}`);
+        async function togglePermisoUsuario(id, permitido) {
+            try {
+                const respuesta = await solicitarAPI(`/api/users/${encodeURIComponent(id)}/permissions`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ canAddProduct: permitido })
+                });
+                const usuario = respuesta.user;
+                usuariosRegistrados = usuariosRegistrados.map(usr => usr.id === usuario.id ? usuario : usr);
+                mostrarToast(`Permisos actualizados para ${usuario.nombre}`);
 
-                if (usuarioActual && usuarioActual.email === email) {
-                    usuarioActual.canAddProduct = permitido;
-                    localStorage.setItem('adl_usuario_activo', JSON.stringify(usuarioActual));
+                if (usuarioActual && usuarioActual.id === usuario.id) {
+                    usuarioActual = usuario;
                     actualizarUsuarioUI();
                 }
+            } catch (error) {
+                mostrarToast(error.message);
+                await renderizarListaUsuariosAdmin();
             }
         }
 
@@ -1667,7 +1705,7 @@
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = 'toast';
-            toast.innerHTML = `✨ <span>${mensaje}</span>`;
+            toast.textContent = `✨ ${mensaje}`;
             
             container.appendChild(toast);
 
