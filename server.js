@@ -103,10 +103,22 @@ async function start() {
     await mongoClient.connect();
     const database = mongoClient.db(process.env.MONGODB_DB || undefined);
     const users = database.collection('users');
-    await users.createIndex(
-        { email: 1 },
-        { unique: true, partialFilterExpression: { app: 'adl' } }
+    const indexes = await users.indexes();
+    const hasUniqueEmailIndex = indexes.some(index =>
+        index.unique === true
+        && Object.keys(index.key).length === 1
+        && index.key.email === 1
     );
+    if (!hasUniqueEmailIndex) {
+        await users.createIndex(
+            { email: 1 },
+            {
+                name: 'adl_email_unique',
+                unique: true,
+                partialFilterExpression: { app: 'adl' }
+            }
+        );
+    }
 
     app.post('/api/auth/register', async (req, res, next) => {
         try {
