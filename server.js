@@ -1,21 +1,25 @@
 require('dotenv').config();
 
-const path = require('node:path');
 const express = require('express');
-const session = require('express-session');
-const MongoStore = require('connect-mongo');
+const cors = require('cors');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const { MongoClient, ObjectId } = require('mongodb');
 
-const { MONGODB_URI, SESSION_SECRET } = process.env;
+const { MONGODB_URI, JWT_SECRET } = process.env;
+const GITHUB_PAGES_ORIGIN = process.env.GITHUB_PAGES_ORIGIN;
 const PORT = Number(process.env.PORT) || 3000;
 
 if (!MONGODB_URI) {
     throw new Error('Falta configurar MONGODB_URI en el archivo .env.');
 }
 
-if (!SESSION_SECRET || SESSION_SECRET.length < 32) {
-    throw new Error('SESSION_SECRET debe tener al menos 32 caracteres.');
+if (!JWT_SECRET || JWT_SECRET.length < 32) {
+    throw new Error('JWT_SECRET debe tener al menos 32 caracteres.');
+}
+
+if (!GITHUB_PAGES_ORIGIN) {
+    throw new Error('Falta configurar GITHUB_PAGES_ORIGIN con el origen de GitHub Pages.');
 }
 
 const mongoClient = new MongoClient(MONGODB_URI);
@@ -25,6 +29,12 @@ if (process.env.TRUST_PROXY === 'true') {
     app.set('trust proxy', 1);
 }
 
+app.use(cors({
+    origin: GITHUB_PAGES_ORIGIN,
+    credentials: true,
+    methods: ['GET', 'POST', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json({ limit: '10kb' }));
 
 function publicUser(user) {
@@ -37,18 +47,6 @@ function publicUser(user) {
     };
 }
 
-function regenerateSession(req) {
-    return new Promise((resolve, reject) => {
-        req.session.regenerate(error => error ? reject(error) : resolve());
-    });
-}
-
-function destroySession(req) {
-    return new Promise((resolve, reject) => {
-        req.session.destroy(error => error ? reject(error) : resolve());
-    });
-}
-
 function normalizeEmail(email) {
     return typeof email === 'string' ? email.trim().toLowerCase() : '';
 }
@@ -59,15 +57,23 @@ function validEmail(email) {
 
 function requireUser(users) {
     return async (req, res, next) => {
-        if (!req.session.userId || !ObjectId.isValid(req.session.userId)) {
+        const authorization = req.get('authorization') || '';
+        const [scheme, token] = authorization.split(' ');
+        if (scheme !== 'Bearer' || !token) {
             res.status(401).json({ error: 'Inicia sesión para continuar.' });
             return;
         }
 
         try {
-            const user = await users.findOne({ _id: new ObjectId(req.session.userId) });
+            const decoded = jwt.verify(token, JWT_SECRET);
+            if (typeof decoded === 'string' || typeof decoded.sub !== 'string'
+                || !ObjectId.isValid(decoded.sub)) {
+                res.status(401).json({ error: 'La sesión ya no es válida. Inicia sesión nuevamente.' });
+                return;
+            }
+
+            const user = await users.findOne({ _id: new ObjectId(decoded.sub), app: 'adl' });
             if (!user) {
-                await destroySession(req);
                 res.status(401).json({ error: 'La sesión ya no es válida. Inicia sesión nuevamente.' });
                 return;
             }
@@ -75,6 +81,10 @@ function requireUser(users) {
             req.authUser = user;
             next();
         } catch (error) {
+            if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+                res.status(401).json({ error: 'La sesión ya no es válida. Inicia sesión nuevamente.' });
+                return;
+            }
             next(error);
         }
     };
@@ -93,25 +103,10 @@ async function start() {
     await mongoClient.connect();
     const database = mongoClient.db(process.env.MONGODB_DB || undefined);
     const users = database.collection('users');
-    await users.createIndex({ email: 1 }, { unique: true });
-
-    app.use(session({
-        name: 'adl.sid',
-        secret: SESSION_SECRET,
-        store: MongoStore.create({
-            client: mongoClient,
-            dbName: database.databaseName,
-            collectionName: 'sessions'
-        }),
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-            httpOnly: true,
-            sameSite: 'lax',
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        }
-    }));
+    await users.createIndex(
+        { email: 1 },
+        { unique: true, partialFilterExpression: { app: 'adl' } }
+    );
 
     app.post('/api/auth/register', async (req, res, next) => {
         try {
@@ -132,6 +127,7 @@ async function start() {
             }
 
             const user = {
+                app: 'adl',
                 nombre,
                 email,
                 passwordHash: await bcrypt.hash(password, 12),
@@ -151,9 +147,8 @@ async function start() {
                 throw error;
             }
 
-            await regenerateSession(req);
-            req.session.userId = user._id.toString();
-            res.status(201).json({ user: publicUser(user) });
+            const token = jwt.sign({}, JWT_SECRET, { subject: user._id.toString(), expiresIn: '7d' });
+            res.status(201).json({ user: publicUser(user), token });
         } catch (error) {
             next(error);
         }
@@ -168,57 +163,30 @@ async function start() {
                 return;
             }
 
-            const user = await users.findOne({ email });
+            const user = await users.findOne({ email, app: 'adl' });
             if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
                 res.status(401).json({ error: 'Correo o contraseña incorrectos.' });
                 return;
             }
 
-            await regenerateSession(req);
-            req.session.userId = user._id.toString();
-            res.json({ user: publicUser(user) });
+            const token = jwt.sign({}, JWT_SECRET, { subject: user._id.toString(), expiresIn: '7d' });
+            res.json({ user: publicUser(user), token });
         } catch (error) {
             next(error);
         }
     });
 
-    app.get('/api/auth/me', async (req, res, next) => {
-        if (!req.session.userId || !ObjectId.isValid(req.session.userId)) {
-            res.json({ user: null });
-            return;
-        }
-
-        try {
-            const user = await users.findOne({ _id: new ObjectId(req.session.userId) });
-            if (!user) {
-                await destroySession(req);
-                res.json({ user: null });
-                return;
-            }
-
-            res.json({ user: publicUser(user) });
-        } catch (error) {
-            next(error);
-        }
+    app.get('/api/auth/me', requireUser(users), (req, res) => {
+        res.json({ user: publicUser(req.authUser) });
     });
 
-    app.post('/api/auth/logout', async (req, res, next) => {
-        try {
-            await destroySession(req);
-            res.clearCookie('adl.sid', {
-                httpOnly: true,
-                sameSite: 'lax',
-                secure: process.env.NODE_ENV === 'production'
-            });
-            res.json({ ok: true });
-        } catch (error) {
-            next(error);
-        }
+    app.post('/api/auth/logout', (req, res) => {
+        res.json({ ok: true });
     });
 
     app.get('/api/users', requireUser(users), requireAdmin, async (req, res, next) => {
         try {
-            const storedUsers = await users.find({}, {
+            const storedUsers = await users.find({ app: 'adl' }, {
                 projection: { nombre: 1, email: 1, role: 1, canAddProduct: 1 }
             }).sort({ createdAt: 1 }).toArray();
             res.json({ users: storedUsers.map(publicUser) });
@@ -235,7 +203,7 @@ async function start() {
             }
 
             const userId = new ObjectId(req.params.id);
-            const targetUser = await users.findOne({ _id: userId });
+            const targetUser = await users.findOne({ _id: userId, app: 'adl' });
             if (!targetUser) {
                 res.status(404).json({ error: 'No se encontró el usuario.' });
                 return;
@@ -257,12 +225,8 @@ async function start() {
         }
     });
 
-    app.get('/', (req, res) => {
-        res.sendFile(path.join(__dirname, 'index.html'));
-    });
-
-    app.get('/logo-adl.jpg', (req, res) => {
-        res.sendFile(path.join(__dirname, 'logo-adl.jpg'));
+    app.get('/api/health', (req, res) => {
+        res.json({ ok: true });
     });
 
     app.use('/api', (req, res) => {

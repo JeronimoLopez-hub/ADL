@@ -23,11 +23,15 @@ async function createAdmin() {
     try {
         await client.connect();
         const users = client.db(MONGODB_DB || undefined).collection('users');
-        await users.createIndex({ email: 1 }, { unique: true });
+        await users.createIndex(
+            { email: 1 },
+            { unique: true, partialFilterExpression: { app: 'adl' } }
+        );
         await users.updateOne(
-            { email },
+            { email, app: 'adl' },
             {
                 $set: {
+                    app: 'adl',
                     email,
                     passwordHash: await bcrypt.hash(ADMIN_PASSWORD, 12),
                     role: 'admin',

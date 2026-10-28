@@ -1131,6 +1131,8 @@
 
     <!-- Lógica de JavaScript -->
     <script>
+        const API_BASE_URL = 'https://adl-auth-api.onrender.com';
+
         const productosIniciales = [
             { id: 1, nombre: 'Taza Mágica Personalizada', precio: 5700, imagen: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=500&auto=format&fit=crop&q=60' },
             { id: 2, nombre: 'Remera Spun Full Print', precio: 14000, imagen: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500&auto=format&fit=crop&q=60' },
@@ -1142,28 +1144,34 @@
         let carrito = JSON.parse(localStorage.getItem('adl_carrito')) || [];
         let usuariosRegistrados = [];
         let usuarioActual = null;
+        let tokenSesion = sessionStorage.getItem('adl_token');
         let previewImagenTemp = '';
         let productoEditandoId = null;
 
         document.addEventListener('DOMContentLoaded', async () => {
             renderizarProductos();
             actualizarCarritoUI();
-            try {
-                const respuesta = await solicitarAPI('/api/auth/me');
-                usuarioActual = respuesta.user;
-            } catch (error) {
-                mostrarToast(`No se pudo conectar con el servicio de usuarios: ${error.message}`);
+            if (tokenSesion) {
+                try {
+                    const respuesta = await solicitarAPI('/api/auth/me');
+                    usuarioActual = respuesta.user;
+                } catch (error) {
+                    sessionStorage.removeItem('adl_token');
+                    tokenSesion = null;
+                    mostrarToast(`No se pudo recuperar la sesión: ${error.message}`);
+                }
             }
             actualizarUsuarioUI();
         });
 
         async function solicitarAPI(ruta, opciones = {}) {
             const { headers = {}, ...opcionesFetch } = opciones;
-            const respuesta = await fetch(ruta, {
-                credentials: 'same-origin',
+            const respuesta = await fetch(`${API_BASE_URL}${ruta}`, {
+                credentials: 'include',
                 ...opcionesFetch,
                 headers: {
                     'Content-Type': 'application/json',
+                    ...(tokenSesion ? { Authorization: `Bearer ${tokenSesion}` } : {}),
                     ...headers
                 }
             });
@@ -1467,6 +1475,8 @@
             if (usuarioActual) {
                 try {
                     await solicitarAPI('/api/auth/logout', { method: 'POST' });
+                    sessionStorage.removeItem('adl_token');
+                    tokenSesion = null;
                     usuarioActual = null;
                     actualizarUsuarioUI();
                     mostrarToast("Has cerrado sesión correctamente");
@@ -1555,6 +1565,8 @@
                     method: 'POST',
                     body: JSON.stringify(datos)
                 });
+                tokenSesion = respuesta.token;
+                sessionStorage.setItem('adl_token', tokenSesion);
                 usuarioActual = respuesta.user;
                 formulario.reset();
                 if (esRegistro) {
