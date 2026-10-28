@@ -694,6 +694,11 @@
             transform: scale(0.98);
         }
 
+        .btn-submit:disabled {
+            cursor: wait;
+            opacity: 0.75;
+        }
+
         /* Pestañas Auth Rediseñadas */
         .auth-header {
             text-align: center;
@@ -718,6 +723,13 @@
             border-radius: 12px;
             display: flex;
             margin-bottom: 1.5rem;
+        }
+
+        .auth-status {
+            margin: -0.75rem 0 1rem;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            text-align: center;
         }
 
         .auth-tab {
@@ -1039,6 +1051,7 @@
                 <button class="auth-tab active" id="tab-login" onclick="cambiarModoAuth('login')">Iniciar Sesión</button>
                 <button class="auth-tab" id="tab-register" onclick="cambiarModoAuth('register')">Crear Cuenta</button>
             </div>
+            <p class="auth-status" id="auth-status" role="status" aria-live="polite">Si el servidor estuvo inactivo, la primera conexión puede tardar hasta un minuto.</p>
 
             <!-- Formulario Iniciar Sesión -->
             <form id="form-login" onsubmit="procesarAuth(event, 'login')">
@@ -1484,6 +1497,9 @@
                     mostrarToast(error.message);
                 }
             } else {
+                fetch(`${API_BASE_URL}/api/health`, { cache: 'no-store' }).catch(error => {
+                    console.warn('No se pudo anticipar la conexión con el servidor de autenticación:', error);
+                });
                 document.getElementById('modal-auth').classList.add('active');
             }
         }
@@ -1559,8 +1575,14 @@
             }
 
             const formulario = document.getElementById(esRegistro ? 'form-register' : 'form-login');
+            const botonEnviar = formulario.querySelector('button[type="submit"]');
+            const estadoAuth = document.getElementById('auth-status');
+            const textoBoton = botonEnviar.innerText;
 
             try {
+                botonEnviar.disabled = true;
+                botonEnviar.innerText = 'Conectando...';
+                estadoAuth.textContent = 'Conectando con el servidor. Si estaba inactivo, puede tardar hasta un minuto.';
                 const respuesta = await solicitarAPI(`/api/auth/${esRegistro ? 'register' : 'login'}`, {
                     method: 'POST',
                     body: JSON.stringify(datos)
@@ -1581,6 +1603,10 @@
                     : `¡Hola de nuevo, ${usuarioActual.nombre}!`);
             } catch (error) {
                 mostrarToast(error.message);
+            } finally {
+                botonEnviar.disabled = false;
+                botonEnviar.innerText = textoBoton;
+                estadoAuth.textContent = 'Si el servidor estuvo inactivo, la primera conexión puede tardar hasta un minuto.';
             }
         }
 
