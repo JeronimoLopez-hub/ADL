@@ -11,13 +11,13 @@
   </defs>
 
   <g opacity=".2">
-    <path d="M0 0h356c-82 53-126 112-133 179-8 71-55 119-133 149L0 342V0Z" fill="url(#terracotta-wash)"/>
-    <path d="M0 0h294c-68 56-103 108-108 162-7 62-48 103-117 132L0 310V0Z" stroke="url(#stone-wash)" stroke-width="13"/>
-    <path d="M0 0h256c-54 51-82 97-86 143-5 52-38 86-97 112L0 275V0Z" stroke="#FFF9F4" stroke-width="7"/>
+    <path d="M43 32c72-24 169-10 229 32 48 34 62 77 39 115-21 35-62 56-76 101-64-22-122-48-184-34C27 183 22 96 43 32Z" fill="url(#terracotta-wash)"/>
+    <path d="M57 39c66-19 149-6 202 31 39 28 51 62 33 92-17 29-52 48-67 82" stroke="url(#stone-wash)" stroke-linecap="round" stroke-linejoin="round" stroke-width="13"/>
+    <path d="M72 48c58-15 128-2 172 29 30 21 41 47 28 69-14 23-43 39-58 66" stroke="#FFF9F4" stroke-linecap="round" stroke-linejoin="round" stroke-width="7"/>
 
-    <path d="M1440 1000h-350c83-51 128-110 137-177 10-69 57-117 137-147l76-29v353Z" fill="url(#terracotta-wash)"/>
-    <path d="M1440 1000h-290c70-55 107-105 113-159 9-61 50-102 119-131l58-22v312Z" stroke="url(#stone-wash)" stroke-width="13"/>
-    <path d="M1440 1000h-251c56-50 84-94 89-140 7-51 40-84 99-109l63-24v273Z" stroke="#FFF9F4" stroke-width="7"/>
+    <path d="M1398 968c-73 24-169 10-229-32-48-34-62-77-39-115 21-35 62-56 76-101 64 22 122 48 184 34 24 63 29 150 8 214Z" fill="url(#terracotta-wash)"/>
+    <path d="M1384 961c-66 19-149 6-202-31-39-28-51-62-33-92 17-29 52-48 67-82" stroke="url(#stone-wash)" stroke-linecap="round" stroke-linejoin="round" stroke-width="13"/>
+    <path d="M1369 952c-58 15-128 2-172-29-30-21-41-47-28-69 14-23 43-39 58-66" stroke="#FFF9F4" stroke-linecap="round" stroke-linejoin="round" stroke-width="7"/>
   </g>
 
   <g opacity=".16">
