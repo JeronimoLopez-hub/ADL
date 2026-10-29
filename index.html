@@ -262,36 +262,26 @@
             gap: 2rem;
         }
 
-        .alphabet-filter {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.45rem;
-            margin: 0 0 1.5rem;
+        .product-search {
+            max-width: 520px;
+            margin: 0 auto 1.5rem;
         }
 
-        .alphabet-filter button {
-            min-width: 2.4rem;
-            min-height: 2.4rem;
-            padding: 0.4rem 0.65rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+        .product-search input {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 1.5px solid var(--border-color);
+            border-radius: 10px;
             background: #ffffff;
             color: var(--text-main);
-            font-weight: 600;
-            cursor: pointer;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        .alphabet-filter button:hover:not(:disabled),
-        .alphabet-filter button[aria-pressed="true"] {
+        .product-search input:focus {
             border-color: var(--primary-orange);
-            background: var(--primary-orange);
-            color: #ffffff;
-        }
-
-        .alphabet-filter button:disabled {
-            cursor: not-allowed;
-            opacity: 0.4;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
         }
 
         .product-grid-empty {
@@ -1050,7 +1040,9 @@
             <h2 class="section-title">Catálogo Destacado</h2>
         </div>
 
-        <div class="alphabet-filter" id="alphabet-filter" aria-label="Filtrar productos por letra"></div>
+        <div class="product-search">
+            <input type="search" id="busqueda-productos" placeholder="Buscar productos..." aria-label="Buscar productos" oninput="renderizarProductos()">
+        </div>
         <div class="product-grid" id="product-grid"></div>
     </main>
 
@@ -1241,9 +1233,6 @@
         let tokenSesion = sessionStorage.getItem('adl_token');
         let previewImagenTemp = '';
         let productoEditandoId = null;
-        let letraFiltroProductos = '';
-        const letrasAbecedario = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'.split('');
-
         document.addEventListener('DOMContentLoaded', async () => {
             renderizarProductos();
             actualizarCarritoUI();
@@ -1293,46 +1282,19 @@
                 .toLocaleUpperCase('es');
         }
 
-        function renderizarFiltroAbecedario() {
-            const filtro = document.getElementById('alphabet-filter');
-            filtro.innerHTML = '';
-
-            const letrasDisponibles = new Set(productos.map(prod =>
-                normalizarNombreProducto(prod.nombre).charAt(0)
-            ));
-
-            const opciones = [{ letra: '', texto: 'Todas' }, ...letrasAbecedario.map(letra => ({
-                letra,
-                texto: letra
-            }))];
-
-            opciones.forEach(({ letra, texto }) => {
-                const boton = document.createElement('button');
-                boton.type = 'button';
-                boton.textContent = texto;
-                boton.setAttribute('aria-pressed', String(letraFiltroProductos === letra));
-                boton.disabled = Boolean(letra) && !letrasDisponibles.has(letra);
-                boton.addEventListener('click', () => {
-                    letraFiltroProductos = letra;
-                    renderizarProductos();
-                });
-                filtro.appendChild(boton);
-            });
-        }
-
         function renderizarProductos() {
             const grid = document.getElementById('product-grid');
             grid.innerHTML = '';
 
-            renderizarFiltroAbecedario();
-            const productosFiltrados = letraFiltroProductos
-                ? productos.filter(prod => normalizarNombreProducto(prod.nombre).startsWith(letraFiltroProductos))
-                : productos;
+            const busqueda = normalizarNombreProducto(document.getElementById('busqueda-productos').value.trim());
+            const productosFiltrados = productos.filter(prod =>
+                normalizarNombreProducto(prod.nombre).includes(busqueda)
+            );
 
             if (productosFiltrados.length === 0) {
                 const mensaje = document.createElement('p');
                 mensaje.className = 'product-grid-empty';
-                mensaje.textContent = 'No hay productos con esa letra.';
+                mensaje.textContent = 'No encontramos productos que coincidan con tu búsqueda.';
                 grid.appendChild(mensaje);
                 return;
             }
