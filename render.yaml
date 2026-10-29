@@ -14,7 +14,7 @@ services:
       - key: MONGODB_DB
         value: sample_mflix
       - key: GITHUB_PAGES_ORIGIN
-        value: https://jeronimolopez-hub.github.io
+        value: https://newweb-hub.github.io
       - key: MONGODB_URI
         sync: false
       - key: JWT_SECRET
