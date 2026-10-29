@@ -21,6 +21,16 @@
   </g>
 
   <g stroke-linecap="round" stroke-linejoin="round">
+    <path d="M0 0h26c-18 74 35 128 15 199-17 63 26 122 9 191-17 69 25 124 7 193-17 68 27 122 10 190-17 69 21 132 6 198-9 42 11 76 25 109H0V0Z" fill="url(#terracotta-wash)" opacity=".16"/>
+    <path d="M27 0c-18 74 35 128 15 199-17 63 26 122 9 191-17 69 25 124 7 193-17 68 27 122 10 190-17 69 21 132 6 198-9 42 11 76 25 109" stroke="url(#stone-wash)" stroke-width="13" opacity=".3"/>
+    <path d="M39 0c-18 74 35 128 15 199-17 63 26 122 9 191-17 69 25 124 7 193-17 68 27 122 10 190-17 69 21 132 6 198-9 42 11 76 25 109" stroke="#FFF9F4" stroke-width="7" opacity=".78"/>
+
+    <path d="M1440 0h-26c18 74-35 128-15 199 17 63-26 122-9 191 17 69-25 124-7 193 17 68-27 122-10 190 17 69-21 132-6 198 9 42-11 76-25 109h98V0Z" fill="url(#terracotta-wash)" opacity=".16"/>
+    <path d="M1413 0c18 74-35 128-15 199 17 63-26 122-9 191 17 69-25 124-7 193 17 68-27 122-10 190-17 69 21 132 6 198-9 42 11 76 25 109" stroke="url(#stone-wash)" stroke-width="13" opacity=".3"/>
+    <path d="M1401 0c18 74-35 128-15 199 17 63-26 122-9 191 17 69-25 124-7 193 17 68-27 122-10 190-17 69 21 132 6 198-9 42 11 76 25 109" stroke="#FFF9F4" stroke-width="7" opacity=".78"/>
+  </g>
+
+  <g stroke-linecap="round" stroke-linejoin="round">
     <path d="M20 35c68-27 153-12 181 35 28 47-4 91-46 107" stroke="#C66A49" stroke-width="9" opacity=".12"/>
     <path d="M31 52c61-24 127-11 149 26 20 34-4 66-40 80" stroke="#777078" stroke-width="4" opacity=".14"/>
 
