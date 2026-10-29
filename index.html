@@ -113,6 +113,10 @@
             background: var(--orange-soft);
         }
 
+        .btn-location-shortcut {
+            text-decoration: none;
+        }
+
         .btn-admin {
             background: #1e293b;
             color: #ffffff;
@@ -256,6 +260,45 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
             gap: 2rem;
+        }
+
+        .alphabet-filter {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.45rem;
+            margin: 0 0 1.5rem;
+        }
+
+        .alphabet-filter button {
+            min-width: 2.4rem;
+            min-height: 2.4rem;
+            padding: 0.4rem 0.65rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: #ffffff;
+            color: var(--text-main);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .alphabet-filter button:hover:not(:disabled),
+        .alphabet-filter button[aria-pressed="true"] {
+            border-color: var(--primary-orange);
+            background: var(--primary-orange);
+            color: #ffffff;
+        }
+
+        .alphabet-filter button:disabled {
+            cursor: not-allowed;
+            opacity: 0.4;
+        }
+
+        .product-grid-empty {
+            grid-column: 1 / -1;
+            padding: 2rem;
+            color: var(--text-muted);
+            text-align: center;
         }
 
         .product-card {
@@ -913,6 +956,31 @@
             transform: translateY(-2px);
         }
 
+        .location-section {
+            margin-top: 2rem;
+        }
+
+        .location-section h4 {
+            margin-bottom: 0.75rem;
+        }
+
+        .btn-contact-map {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            background: #ffffff;
+            color: #1e293b;
+            font-weight: 700;
+            text-decoration: none;
+            transition: transform 0.2s ease;
+        }
+
+        .btn-contact-map:hover {
+            transform: translateY(-2px);
+        }
+
         footer p.copy {
             font-size: 0.85rem;
             color: #94a3b8;
@@ -939,6 +1007,7 @@
             <li><a href="#">Inicio</a></li>
             <li><a href="#catalogo">Catálogo</a></li>
             <li><a href="#contacto">Contacto</a></li>
+            <li><a href="#ubicacion">Ubicación</a></li>
         </ul>
 
         <div class="header-actions">
@@ -958,6 +1027,10 @@
                 🔑 <span id="auth-btn-text">Ingresar</span>
             </button>
 
+            <a class="btn-action btn-location-shortcut" href="#ubicacion" aria-label="Ver ubicación en Google Maps" title="Ubicación">
+                📍
+            </a>
+
             <button class="cart-btn" onclick="toggleCarrito()">
                 🛒 <span class="cart-count-badge" id="cart-count">0</span>
             </button>
@@ -976,7 +1049,8 @@
         <div class="section-header">
             <h2 class="section-title">Catálogo Destacado</h2>
         </div>
-        
+
+        <div class="alphabet-filter" id="alphabet-filter" aria-label="Filtrar productos por letra"></div>
         <div class="product-grid" id="product-grid"></div>
     </main>
 
@@ -1139,6 +1213,13 @@
             </a>
         </div>
 
+        <div class="location-section" id="ubicacion">
+            <h4>Ubicación</h4>
+            <a class="btn-contact-map" href="https://www.google.com/maps/search/?api=1&amp;query=Francisco+Angeloni+3142" target="_blank" rel="noopener noreferrer">
+                📍 Francisco Angeloni 3142
+            </a>
+        </div>
+
         <p class="copy">&copy; 2026 ADL Punto Creativo. Todos los derechos reservados.</p>
     </footer>
 
@@ -1160,6 +1241,8 @@
         let tokenSesion = sessionStorage.getItem('adl_token');
         let previewImagenTemp = '';
         let productoEditandoId = null;
+        let letraFiltroProductos = '';
+        const letrasAbecedario = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'.split('');
 
         document.addEventListener('DOMContentLoaded', async () => {
             renderizarProductos();
@@ -1202,11 +1285,59 @@
             return datos;
         }
 
+        function normalizarNombreProducto(nombre) {
+            return nombre
+                .replace(/n\u0303/gi, 'Ñ')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLocaleUpperCase('es');
+        }
+
+        function renderizarFiltroAbecedario() {
+            const filtro = document.getElementById('alphabet-filter');
+            filtro.innerHTML = '';
+
+            const letrasDisponibles = new Set(productos.map(prod =>
+                normalizarNombreProducto(prod.nombre).charAt(0)
+            ));
+
+            const opciones = [{ letra: '', texto: 'Todas' }, ...letrasAbecedario.map(letra => ({
+                letra,
+                texto: letra
+            }))];
+
+            opciones.forEach(({ letra, texto }) => {
+                const boton = document.createElement('button');
+                boton.type = 'button';
+                boton.textContent = texto;
+                boton.setAttribute('aria-pressed', String(letraFiltroProductos === letra));
+                boton.disabled = Boolean(letra) && !letrasDisponibles.has(letra);
+                boton.addEventListener('click', () => {
+                    letraFiltroProductos = letra;
+                    renderizarProductos();
+                });
+                filtro.appendChild(boton);
+            });
+        }
+
         function renderizarProductos() {
             const grid = document.getElementById('product-grid');
             grid.innerHTML = '';
 
-            productos.forEach(prod => {
+            renderizarFiltroAbecedario();
+            const productosFiltrados = letraFiltroProductos
+                ? productos.filter(prod => normalizarNombreProducto(prod.nombre).startsWith(letraFiltroProductos))
+                : productos;
+
+            if (productosFiltrados.length === 0) {
+                const mensaje = document.createElement('p');
+                mensaje.className = 'product-grid-empty';
+                mensaje.textContent = 'No hay productos con esa letra.';
+                grid.appendChild(mensaje);
+                return;
+            }
+
+            productosFiltrados.forEach(prod => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 card.innerHTML = `
