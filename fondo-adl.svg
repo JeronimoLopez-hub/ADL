@@ -1,36 +1,58 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 1000" fill="none">
-  <g opacity=".18">
-    <path d="M0 0h280c-54 70-79 145-51 225 15 43 12 86-17 127L0 492V0Z" fill="#E87545"/>
-    <path d="M0 0h222c-47 68-61 135-39 202 20 61 10 119-35 177L0 431V0Z" stroke="#625C62" stroke-width="20"/>
-    <path d="M0 0h185c-42 70-50 132-28 195 19 54 9 105-31 152L0 395V0Z" stroke="#FFF8F2" stroke-width="12"/>
+  <defs>
+    <linearGradient id="terracotta-wash" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#D97650"/>
+      <stop offset="1" stop-color="#F0B18B"/>
+    </linearGradient>
+    <linearGradient id="stone-wash" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#777078"/>
+      <stop offset="1" stop-color="#AAA1A1"/>
+    </linearGradient>
+  </defs>
 
-    <path d="M1440 0h-264c60 76 81 154 49 233-17 44-12 87 16 127l199 133V0Z" fill="#E87545"/>
-    <path d="M1440 0h-210c50 69 63 137 38 205-22 60-12 118 31 175l141 55V0Z" stroke="#625C62" stroke-width="20"/>
-    <path d="M1440 0h-174c44 71 52 133 28 196-21 54-12 105 27 153l119 46V0Z" stroke="#FFF8F2" stroke-width="12"/>
+  <g opacity=".2">
+    <path d="M0 0h356c-82 53-126 112-133 179-8 71-55 119-133 149L0 342V0Z" fill="url(#terracotta-wash)"/>
+    <path d="M0 0h294c-68 56-103 108-108 162-7 62-48 103-117 132L0 310V0Z" stroke="url(#stone-wash)" stroke-width="13"/>
+    <path d="M0 0h256c-54 51-82 97-86 143-5 52-38 86-97 112L0 275V0Z" stroke="#FFF9F4" stroke-width="7"/>
 
-    <path d="M0 1000h300c-64-73-91-149-61-229 16-43 9-87-21-129L0 487v513Z" fill="#E87545"/>
-    <path d="M0 1000h225c-53-68-70-136-47-204 20-61 7-119-38-177L0 564v436Z" stroke="#625C62" stroke-width="20"/>
-    <path d="M0 1000h184c-46-70-56-132-33-195 20-54 7-105-34-152L0 605v395Z" stroke="#FFF8F2" stroke-width="12"/>
-
-    <path d="M1440 1000h-285c57-73 78-150 46-229-18-43-13-87 14-129l225-155v513Z" fill="#E87545"/>
-    <path d="M1440 1000h-216c47-68 60-136 35-204-23-61-12-119 29-177l152-105v486Z" stroke="#625C62" stroke-width="20"/>
-    <path d="M1440 1000h-178c41-70 49-132 24-195-22-54-12-105 27-152l127-88v435Z" stroke="#FFF8F2" stroke-width="12"/>
+    <path d="M1440 1000h-350c83-51 128-110 137-177 10-69 57-117 137-147l76-29v353Z" fill="url(#terracotta-wash)"/>
+    <path d="M1440 1000h-290c70-55 107-105 113-159 9-61 50-102 119-131l58-22v312Z" stroke="url(#stone-wash)" stroke-width="13"/>
+    <path d="M1440 1000h-251c56-50 84-94 89-140 7-51 40-84 99-109l63-24v273Z" stroke="#FFF9F4" stroke-width="7"/>
   </g>
 
-  <g stroke="#C66A49" stroke-linecap="round" stroke-width="9" opacity=".16">
-    <path d="m244 304 18 26"/>
-    <path d="m279 285 8 31"/>
-    <path d="m311 282-3 31"/>
-    <path d="m1188 710 19 25"/>
-    <path d="m1222 692 8 30"/>
-    <path d="m1255 690-3 29"/>
-    <path d="m305 722 17 23"/>
-    <path d="m338 705 7 28"/>
-    <path d="m370 704-3 27"/>
+  <g opacity=".16">
+    <path d="M1240 177c71 31 112 89 108 153-3 48-36 80-78 77-39-3-60-38-43-67 13-22 45-22 57-4" stroke="url(#terracotta-wash)" stroke-width="3"/>
+    <circle cx="1281" cy="275" r="80" stroke="url(#stone-wash)" stroke-width="2"/>
+    <circle cx="1281" cy="275" r="68" stroke="url(#terracotta-wash)" stroke-width="1.5" stroke-dasharray="2 8"/>
+    <circle cx="1281" cy="275" r="4" fill="#D97650"/>
+    <path d="M1281 258v14m0 7v14m-17-17h14m7 0h14" stroke="#D97650" stroke-linecap="round" stroke-width="2"/>
+
+    <path d="M96 716c75-34 132-19 157 19 20 31 7 65-22 69-26 4-40-18-28-34 9-11 24-9 29 1" stroke="url(#stone-wash)" stroke-width="2"/>
+    <path d="M153 799c33 13 59 9 77-7" stroke="url(#terracotta-wash)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M1092 421c25-18 50-20 72-7 19 11 27 30 18 44" stroke="url(#stone-wash)" stroke-width="2" stroke-linecap="round"/>
+    <path d="M1127 448c12 5 23 3 32-5" stroke="url(#terracotta-wash)" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="105" cy="699" r="3" fill="#D97650"/>
+    <circle cx="91" cy="687" r="1.8" fill="#777078"/>
+    <circle cx="118" cy="681" r="1.8" fill="#777078"/>
   </g>
 
-  <g stroke="#625C62" stroke-linecap="round" stroke-width="5" stroke-dasharray="12 15" opacity=".12">
-    <path d="M345 145c61-42 118-23 125 17 5 31-37 47-56 24"/>
-    <path d="M1092 835c-54 38-105 17-106-21-1-29 38-40 54-18"/>
+  <g opacity=".19" stroke="#C66A49" stroke-linecap="round">
+    <path d="m356 229 9 18m14-31 2 21m22-27-5 20" stroke-width="3"/>
+    <path d="m1096 761 10 18m13-29 3 21m22-26-5 20" stroke-width="3"/>
+    <path d="M1036 202c22-13 42-14 60-3" stroke-width="2"/>
+    <path d="M287 815c24 7 46 3 65-11" stroke-width="2"/>
+    <path d="M1178 471c8-8 17-11 26-9m-19 24c10-3 19-2 27 3" stroke-width="2"/>
+    <path d="M330 485c8 2 15 7 19 14m-32-3c9 5 14 12 16 21" stroke-width="2"/>
+  </g>
+
+  <g fill="#777078" opacity=".16">
+    <circle cx="397" cy="273" r="2.5"/>
+    <circle cx="414" cy="286" r="1.5"/>
+    <circle cx="390" cy="297" r="1.8"/>
+    <circle cx="1057" cy="715" r="2.4"/>
+    <circle cx="1075" cy="727" r="1.5"/>
+    <circle cx="1051" cy="739" r="1.8"/>
+    <circle cx="229" cy="540" r="1.8"/>
+    <circle cx="1195" cy="506" r="1.8"/>
   </g>
 </svg>
