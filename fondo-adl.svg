@@ -20,6 +20,20 @@
     <path d="M1369 952c-58 15-128 2-172-29-30-21-41-47-28-69 14-23 43-39 58-66" stroke="#FFF9F4" stroke-linecap="round" stroke-linejoin="round" stroke-width="7"/>
   </g>
 
+  <g stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 35c68-27 153-12 181 35 28 47-4 91-46 107" stroke="#C66A49" stroke-width="9" opacity=".12"/>
+    <path d="M31 52c61-24 127-11 149 26 20 34-4 66-40 80" stroke="#777078" stroke-width="4" opacity=".14"/>
+
+    <path d="M1420 35c-68-27-153-12-181 35-28 47 4 91 46 107" stroke="#C66A49" stroke-width="9" opacity=".12"/>
+    <path d="M1409 52c-61-24-127-11-149 26-20 34 4 66 40 80" stroke="#777078" stroke-width="4" opacity=".14"/>
+
+    <path d="M20 965c68 27 153 12 181-35 28-47-4-91-46-107" stroke="#C66A49" stroke-width="9" opacity=".12"/>
+    <path d="M31 948c61 24 127 11 149-26 20-34-4-66-40-80" stroke="#777078" stroke-width="4" opacity=".14"/>
+
+    <path d="M1420 965c-68 27-153 12-181-35-28-47 4-91 46-107" stroke="#C66A49" stroke-width="9" opacity=".12"/>
+    <path d="M1409 948c-61 24-127 11-149-26-20-34 4-66 40-80" stroke="#777078" stroke-width="4" opacity=".14"/>
+  </g>
+
   <g opacity=".16">
     <path d="M1240 177c71 31 112 89 108 153-3 48-36 80-78 77-39-3-60-38-43-67 13-22 45-22 57-4" stroke="url(#terracotta-wash)" stroke-width="3"/>
     <circle cx="1281" cy="275" r="80" stroke="url(#stone-wash)" stroke-width="2"/>
