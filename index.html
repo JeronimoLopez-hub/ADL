@@ -992,6 +992,35 @@
             .hero h1 { font-size: 1.8rem; }
             .cart-drawer { max-width: 100%; }
             .logo-image { width: 72px; height: 72px; }
+            .product-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 1rem;
+            }
+            .product-card:hover { transform: none; }
+            .product-img-wrap { height: clamp(120px, 34vw, 190px); }
+            .product-info { padding: 0.9rem; }
+            .product-title { font-size: 0.98rem; }
+            .product-price { font-size: 1.15rem; margin-bottom: 0.75rem; }
+            .card-controls { gap: 0.55rem; }
+            .btn-add { padding: 0.65rem 0.4rem; font-size: 0.82rem; gap: 0.3rem; }
+            .btn-edit-product { padding: 0.5rem 0.35rem; font-size: 0.78rem; }
+        }
+
+        @media(min-width: 560px) and (max-width: 768px) {
+            .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .product-img-wrap { height: clamp(135px, 25vw, 180px); }
+        }
+
+        @media(max-width: 380px) {
+            .container { padding: 0 1rem; }
+            .product-grid { gap: 0.7rem; }
+            .product-img-wrap { height: 118px; }
+            .product-info { padding: 0.7rem; }
+            .product-title { font-size: 0.88rem; }
+            .product-price { font-size: 1.05rem; }
+            .qty-btn { width: 30px; height: 32px; }
+            .qty-input { width: 34px; font-size: 0.85rem; }
+            .btn-add { font-size: 0.74rem; }
         }
     </style>
 </head>
