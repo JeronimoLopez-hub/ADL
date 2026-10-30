@@ -1448,7 +1448,7 @@
                 <div class="payment-alias-box">
                     <span>Transferí el total al alias</span>
                     <strong class="payment-alias">paola.lopez.sj</strong>
-                    <button type="button" class="btn-payment-secondary" onclick="copiarAliasYabrirMercadoPago()">📋 Copiar alias y abrir Mercado Pago</button>
+                    <button type="button" class="btn-payment-secondary" onclick="copiarAlias()">📋 Copiar alias</button>
                 </div>
                 <p style="margin-bottom: 0.9rem; color: var(--text-muted); font-size: 0.88rem;">Después de transferir, enviá el comprobante junto con los datos del pedido.</p>
                 <div class="payment-actions">
@@ -1948,13 +1948,12 @@
             if (enviado) cerrarOpcionesPago();
         }
 
-        async function copiarAliasYabrirMercadoPago() {
-            window.open('https://www.mercadopago.com.ar/', '_blank', 'noopener,noreferrer');
+        async function copiarAlias() {
             try {
                 await navigator.clipboard.writeText('paola.lopez.sj');
                 mostrarToast('Alias copiado. Pégalo en Mercado Pago para realizar la transferencia.');
             } catch (error) {
-                mostrarToast(`No se pudo copiar automáticamente el alias (${error.message}). Copia paola.lopez.sj y pégalo en Mercado Pago.`);
+                mostrarToast(`No se pudo copiar automáticamente el alias (${error.message}). Copia paola.lopez.sj manualmente.`);
             }
         }
 
