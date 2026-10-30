@@ -53,12 +53,12 @@
             border-bottom: 3px solid var(--primary-orange);
         }
 
-        .mobile-menu-toggle,
         .mobile-menu {
             display: none;
         }
 
         .mobile-menu-toggle {
+            display: inline-flex;
             width: 44px;
             height: 44px;
             padding: 10px;
@@ -215,6 +215,7 @@
         }
 
         .cart-btn {
+            order: -1;
             background: var(--primary-orange);
             color: white;
             padding: 0.5rem 1.2rem;
@@ -1284,7 +1285,7 @@
             .header-actions > .btn-location-shortcut { display: none !important; }
             .mobile-menu-toggle { display: inline-flex; }
             .header-actions { flex-wrap: nowrap; gap: 0.55rem; }
-            .cart-btn { order: -1; padding: 0.5rem 0.75rem; }
+            .cart-btn { padding: 0.5rem 0.75rem; }
             .hero h1 { font-size: 1.8rem; }
             .cart-drawer { max-width: 100%; }
             .logo-image { width: 72px; height: 72px; }
@@ -1299,10 +1300,6 @@
             .product-price { font-size: 1.15rem; margin-bottom: 0.75rem; }
             .card-controls { gap: 0.55rem; }
             .btn-add { padding: 0.65rem 0.4rem; font-size: 0.82rem; gap: 0.3rem; }
-        }
-
-        @media(min-width: 769px) {
-            .mobile-menu.open { display: none; }
         }
 
         @media(min-width: 560px) and (max-width: 768px) {
@@ -1588,9 +1585,6 @@
         document.addEventListener('DOMContentLoaded', async () => {
             document.addEventListener('click', event => {
                 if (!event.target.closest('#mobile-menu, #mobile-menu-toggle')) cerrarMenuMovil();
-            });
-            window.addEventListener('resize', () => {
-                if (window.matchMedia('(min-width: 769px)').matches) cerrarMenuMovil();
             });
             if (tokenSesion) {
                 try {
