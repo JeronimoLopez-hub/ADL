@@ -4,8 +4,7 @@
   "private": true,
   "description": "Sitio web de ADL Punto Creativo con autenticación respaldada por MongoDB",
   "scripts": {
-    "start": "node server.js",
-    "create-admin": "node scripts/create-admin.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

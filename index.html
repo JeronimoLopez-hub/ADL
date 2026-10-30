@@ -123,17 +123,6 @@
             text-decoration: none;
         }
 
-        .btn-admin {
-            background: #1e293b;
-            color: #ffffff;
-            border-color: #1e293b;
-        }
-
-        .btn-admin:hover {
-            background: #334155;
-            color: #ffffff;
-        }
-
         .user-status {
             font-size: 0.85rem;
             font-weight: 600;
@@ -427,37 +416,6 @@
 
         .btn-add:hover {
             background: var(--primary-orange-hover);
-        }
-
-        .btn-edit-product {
-            background: #ffffff;
-            color: var(--primary-orange);
-            border: 1px solid var(--primary-orange);
-            width: 100%;
-            padding: 0.6rem;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .btn-edit-product:hover {
-            background: var(--orange-soft);
-        }
-
-        .btn-delete-product {
-            background: #fff;
-            color: #dc2626;
-            border: 1px solid #fecaca;
-            width: 100%;
-            padding: 0.6rem;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .btn-delete-product:hover {
-            background: #fef2f2;
-            border-color: #dc2626;
         }
 
         /* Modal Carrito (Sidebar) */
@@ -1214,7 +1172,6 @@
             .product-price { font-size: 1.15rem; margin-bottom: 0.75rem; }
             .card-controls { gap: 0.55rem; }
             .btn-add { padding: 0.65rem 0.4rem; font-size: 0.82rem; gap: 0.3rem; }
-            .btn-edit-product { padding: 0.5rem 0.35rem; font-size: 0.78rem; }
         }
 
         @media(min-width: 560px) and (max-width: 768px) {
@@ -1252,16 +1209,6 @@
 
         <div class="header-actions">
             <span id="user-display" class="user-status" style="display: none;"></span>
-
-            <!-- Botón Panel de Usuarios (Solo visible para el Admin Principal) -->
-            <button class="btn-action btn-admin" id="admin-panel-btn" onclick="abrirModalPanelAdmin()" style="display: none;">
-                ⚙️ <span>Panel Permisos</span>
-            </button>
-
-            <!-- Botón Publicar Producto (Solo visible si tiene permiso) -->
-            <button class="btn-action" id="btn-nuevo-producto" onclick="abrirModalNuevoProducto()" style="display: none;">
-                ➕ <span>Nuevo</span>
-            </button>
 
             <button class="btn-action" id="auth-btn" onclick="abrirModalAuth()">
                 🔑 <span id="auth-btn-text">Ingresar</span>
@@ -1315,47 +1262,6 @@
                     🛍️ Comprar
                 </button>
             </div>
-        </div>
-    </div>
-
-    <!-- Modal para Agregar o Editar Producto -->
-    <div class="generic-modal" id="modal-producto">
-        <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h3 id="titulo-modal-producto" style="font-weight: 800; font-size: 1.3rem;">Publicar Nuevo Producto</h3>
-                <button class="close-btn" onclick="cerrarModalNuevoProducto()">&times;</button>
-            </div>
-
-            <form id="form-nuevo-producto" onsubmit="guardarNuevoProducto(event)">
-                <div class="form-group">
-                    <label for="prod-nombre">Nombre del Producto</label>
-                    <input type="text" id="prod-nombre" class="form-control" placeholder="Ej. Remera Personalizada" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="prod-precio">Precio ($ ARS)</label>
-                    <input type="number" id="prod-precio" class="form-control" placeholder="Ej. 4500" min="0" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="prod-img">Imagen principal del producto</label>
-                    <input type="file" id="prod-img" class="form-control" accept="image/*" onchange="previsualizarImagen(event)">
-                    <small style="color: var(--text-muted); display: block; margin-top: 4px;">O introduce la URL de la imagen principal:</small>
-                    <input type="url" id="prod-img-url" class="form-control" style="margin-top: 4px;" placeholder="https://ejemplo.com/imagen.jpg" oninput="previsualizarUrl(event)">
-                </div>
-
-                <div class="form-group">
-                    <label for="prod-img-extras">Otras imágenes del producto</label>
-                    <textarea id="prod-img-extras" class="form-control" rows="3" placeholder="Pega una URL por línea"></textarea>
-                    <small style="color: var(--text-muted); display: block; margin-top: 4px;">Se mostrarán como opciones en la galería del producto. Las fotos del equipo se comprimen automáticamente.</small>
-                </div>
-
-                <div style="text-align: center; margin-bottom: 1rem; display: none;" id="preview-container">
-                    <img id="img-preview" src="" alt="Previsualización" style="max-height: 120px; border-radius: 8px; border: 1px solid var(--border-color);">
-                </div>
-
-                <button type="submit" id="btn-guardar-producto" class="btn-submit">Publicar en la Tienda</button>
-            </form>
         </div>
     </div>
 
@@ -1475,21 +1381,6 @@
         </div>
     </div>
 
-    <!-- Modal Panel de Administración (Gestión de Permisos de Usuarios) -->
-    <div class="generic-modal" id="modal-admin">
-        <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <div>
-                    <h3 style="font-weight: 800; font-size: 1.3rem;">Control de Permisos</h3>
-                    <p style="font-size: 0.8rem; color: var(--text-muted);">Activa la opción para permitir a los usuarios publicar productos.</p>
-                </div>
-                <button class="close-btn" onclick="cerrarModalPanelAdmin()">&times;</button>
-            </div>
-
-            <div id="admin-user-list"></div>
-        </div>
-    </div>
-
     <!-- Formulario oculto para envío por Email -->
     <form id="formsubmit-hidden" action="https://formsubmit.co/lopezjero203@gmail.com" method="POST" target="hidden_iframe" style="display: none;">
         <input type="text" name="_subject" id="fs-subject" value="Nuevo Evento de Usuario">
@@ -1531,13 +1422,15 @@
     <script>
         const API_BASE_URL = 'https://adl-auth-api.onrender.com';
 
-        let productos = [];
+        const productos = [
+            { id: 1, nombre: 'Taza Mágica Personalizada', precio: 7000, imagen: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=500&auto=format&fit=crop&q=60' },
+            { id: 2, nombre: 'Remera Spun Full Print', precio: 14000, imagen: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500&auto=format&fit=crop&q=60' },
+            { id: 3, nombre: 'Mate Pampa Sublimado', precio: 6200, imagen: 'https://images.unsplash.com/photo-1577803645773-f96470509666?w=500&auto=format&fit=crop&q=60' },
+            { id: 4, nombre: 'Llavero de Cuerina Sublimable', precio: 1500, imagen: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=500&auto=format&fit=crop&q=60' }
+        ];
         let carrito = JSON.parse(localStorage.getItem('adl_carrito')) || [];
-        let usuariosRegistrados = [];
         let usuarioActual = null;
         let tokenSesion = sessionStorage.getItem('adl_token');
-        let previewImagenTemp = '';
-        let productoEditandoId = null;
         let productoDetalleActualId = null;
         let imagenesDetalleActuales = [];
 
@@ -1555,7 +1448,7 @@
                 document.getElementById('auth-status').textContent = 'Inicia sesión o crea una cuenta para entrar a la tienda.';
             }
             actualizarUsuarioUI();
-            if (usuarioActual) await cargarProductos();
+            renderizarProductos();
             actualizarCarritoUI();
         });
 
@@ -1598,71 +1491,6 @@
                 ...(Array.isArray(producto.imagenes) ? producto.imagenes : [])
             ].filter(imagen => typeof imagen === 'string' && imagen.trim());
             return [...new Set(imagenes)];
-        }
-
-        async function cargarProductos() {
-            const grid = document.getElementById('product-grid');
-            grid.innerHTML = '<p class="product-grid-empty">Cargando productos...</p>';
-            try {
-                const respuesta = await solicitarAPI('/api/products');
-                productos = respuesta.products;
-                await migrarProductosLocalesSiAdmin();
-                renderizarProductos();
-            } catch (error) {
-                grid.innerHTML = '';
-                const mensaje = document.createElement('p');
-                mensaje.className = 'product-grid-empty';
-                mensaje.textContent = `No se pudieron cargar los productos: ${error.message}`;
-                grid.appendChild(mensaje);
-                mostrarToast(`Error al cargar productos: ${error.message}`);
-            }
-        }
-
-        async function migrarProductosLocalesSiAdmin() {
-            const claveMigracion = 'adl_catalog_migrated_to_mongodb_v1';
-            const catalogoLocal = localStorage.getItem('adl_productos');
-            if (usuarioActual?.role !== 'admin' || !catalogoLocal || localStorage.getItem(claveMigracion)) return;
-
-            let productosLocales;
-            try {
-                productosLocales = JSON.parse(catalogoLocal);
-            } catch (error) {
-                mostrarToast(`No se pudieron leer los productos anteriores guardados en este navegador: ${error.message}`);
-                return;
-            }
-            if (!Array.isArray(productosLocales)) {
-                mostrarToast('No se pudieron importar los productos anteriores: el catálogo local no tiene un formato válido.');
-                return;
-            }
-
-            const nombresExistentes = new Set(productos.map(prod => normalizarNombreProducto(prod.nombre)));
-            try {
-                for (const productoLocal of productosLocales) {
-                    if (!productoLocal || typeof productoLocal.nombre !== 'string'
-                        || nombresExistentes.has(normalizarNombreProducto(productoLocal.nombre))) continue;
-
-                    const imagenesLocales = obtenerImagenesProducto(productoLocal);
-                    const imagen = imagenesLocales[0];
-                    if (!imagen || !Number.isFinite(Number(productoLocal.precio))) {
-                        throw new Error(`El producto "${productoLocal.nombre}" tiene datos incompletos.`);
-                    }
-
-                    const respuesta = await solicitarAPI('/api/products', {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            nombre: productoLocal.nombre,
-                            precio: Number(productoLocal.precio),
-                            imagen,
-                            imagenes: imagenesLocales.slice(1, 8)
-                        })
-                    });
-                    productos.push(respuesta.product);
-                    nombresExistentes.add(normalizarNombreProducto(respuesta.product.nombre));
-                }
-                localStorage.setItem(claveMigracion, 'true');
-            } catch (error) {
-                mostrarToast(`No se pudieron importar todos los productos anteriores: ${error.message}`);
-            }
         }
 
         function renderizarProductos() {
@@ -1718,24 +1546,6 @@
 
                 const controls = document.createElement('div');
                 controls.className = 'card-controls';
-                if (tienePermisoCrearProducto()) {
-                    const editButton = document.createElement('button');
-                    editButton.type = 'button';
-                    editButton.className = 'btn-edit-product';
-                    editButton.textContent = '✏️ Editar producto';
-                    editButton.addEventListener('click', () => editarProducto(prod.id));
-                    controls.appendChild(editButton);
-
-                    if (usuarioActual.role === 'admin') {
-                        const deleteButton = document.createElement('button');
-                        deleteButton.type = 'button';
-                        deleteButton.className = 'btn-delete-product';
-                        deleteButton.textContent = '🗑️ Eliminar producto';
-                        deleteButton.addEventListener('click', () => eliminarProducto(prod.id));
-                        controls.appendChild(deleteButton);
-                    }
-                }
-
                 const quantity = document.createElement('div');
                 quantity.className = 'qty-selector';
                 const decrease = document.createElement('button');
@@ -2089,240 +1899,6 @@
             abrirWhatsAppPedido('Quisiera realizar el siguiente pedido:');
         }
 
-        function abrirModalNuevoProducto() {
-            if (!tienePermisoCrearProducto()) {
-                mostrarToast("No tienes permisos para agregar productos.");
-                return;
-            }
-            productoEditandoId = null;
-            document.getElementById('form-nuevo-producto').reset();
-            document.getElementById('titulo-modal-producto').innerText = 'Publicar Nuevo Producto';
-            document.getElementById('btn-guardar-producto').innerText = 'Publicar en la Tienda';
-            document.getElementById('preview-container').style.display = 'none';
-            document.getElementById('prod-img-extras').value = '';
-            previewImagenTemp = '';
-            document.getElementById('modal-producto').classList.add('active');
-        }
-
-        function editarProducto(productoId) {
-            if (!tienePermisoCrearProducto()) {
-                mostrarToast("No tienes permisos para editar productos.");
-                return;
-            }
-
-            const producto = productos.find(prod => prod.id === productoId);
-            if (!producto) {
-                mostrarToast("No se encontró el producto que quieres editar.");
-                return;
-            }
-
-            productoEditandoId = productoId;
-            document.getElementById('prod-nombre').value = producto.nombre;
-            document.getElementById('prod-precio').value = producto.precio;
-            document.getElementById('prod-img').value = '';
-            document.getElementById('prod-img-url').value = '';
-            const imagenes = obtenerImagenesProducto(producto);
-            previewImagenTemp = imagenes[0] || '';
-            document.getElementById('prod-img-extras').value = imagenes.slice(1).join('\n');
-            document.getElementById('img-preview').src = previewImagenTemp;
-            document.getElementById('preview-container').style.display = 'block';
-            document.getElementById('titulo-modal-producto').innerText = 'Editar Producto';
-            document.getElementById('btn-guardar-producto').innerText = 'Guardar Cambios';
-            document.getElementById('modal-producto').classList.add('active');
-        }
-
-        function cerrarModalNuevoProducto() {
-            document.getElementById('modal-producto').classList.remove('active');
-            document.getElementById('form-nuevo-producto').reset();
-            document.getElementById('preview-container').style.display = 'none';
-            document.getElementById('prod-img-extras').value = '';
-            previewImagenTemp = '';
-            productoEditandoId = null;
-            document.getElementById('titulo-modal-producto').innerText = 'Publicar Nuevo Producto';
-            document.getElementById('btn-guardar-producto').innerText = 'Publicar en la Tienda';
-        }
-
-        async function previsualizarImagen(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            if (file.size > 15 * 1024 * 1024) {
-                e.target.value = '';
-                mostrarToast('La imagen original debe pesar 15 MB o menos.');
-                return;
-            }
-
-            try {
-                const bitmap = await createImageBitmap(file);
-                try {
-                    let scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
-                    let blob;
-                    do {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-                        canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-                        const context = canvas.getContext('2d');
-                        if (!context) throw new Error('El navegador no pudo preparar la imagen.');
-                        context.fillStyle = '#ffffff';
-                        context.fillRect(0, 0, canvas.width, canvas.height);
-                        context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-
-                        for (const quality of [0.82, 0.72, 0.62, 0.52]) {
-                            blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', quality));
-                            if (blob && blob.size <= 1800 * 1024) break;
-                        }
-                        if (!blob) throw new Error('No se pudo convertir la imagen.');
-                        if (blob.size > 1800 * 1024) scale *= 0.8;
-                    } while (blob.size > 1800 * 1024 && scale >= 0.25);
-
-                    if (blob.size > 1800 * 1024) {
-                        throw new Error('La imagen optimizada sigue siendo demasiado pesada. Elige otra foto.');
-                    }
-
-                    previewImagenTemp = await new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onload = () => resolve(reader.result);
-                        reader.onerror = () => reject(new Error('No se pudo leer la imagen.'));
-                        reader.readAsDataURL(blob);
-                    });
-                    document.getElementById('img-preview').src = previewImagenTemp;
-                    document.getElementById('preview-container').style.display = 'block';
-                    mostrarToast(`Imagen optimizada (${(blob.size / 1024).toFixed(0)} KB).`);
-                } finally {
-                    bitmap.close();
-                }
-            } catch (error) {
-                e.target.value = '';
-                previewImagenTemp = '';
-                mostrarToast(`No se pudo preparar la imagen: ${error.message}`);
-            }
-        }
-
-        function previsualizarUrl(e) {
-            const url = e.target.value;
-            if (url) {
-                previewImagenTemp = url;
-                document.getElementById('img-preview').src = url;
-                document.getElementById('preview-container').style.display = 'block';
-            }
-        }
-
-        async function guardarNuevoProducto(e) {
-            e.preventDefault();
-            if (!tienePermisoCrearProducto()) {
-                mostrarToast("Acción no autorizada");
-                return;
-            }
-
-            const nombre = document.getElementById('prod-nombre').value.trim();
-            const precio = parseFloat(document.getElementById('prod-precio').value);
-            const imgDefault = 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=500&auto=format&fit=crop&q=60';
-            const estabaEditando = productoEditandoId !== null;
-            const urlsAdicionales = document.getElementById('prod-img-extras').value
-                .split(/\r?\n/)
-                .map(url => url.trim())
-                .filter(Boolean);
-
-            if (!nombre || !Number.isFinite(precio) || precio < 0) {
-                mostrarToast("Ingresa un nombre y un precio válido para el producto.");
-                return;
-            }
-            if (urlsAdicionales.length > 7) {
-                mostrarToast('Puedes agregar hasta 7 imágenes adicionales además de la principal.');
-                return;
-            }
-
-            try {
-                const imagenPrincipal = previewImagenTemp
-                    || productos.find(prod => prod.id === productoEditandoId)?.imagen
-                    || imgDefault;
-                if (!imagenPrincipal.startsWith('data:image/')) {
-                    const parsedPrimaryImage = new URL(imagenPrincipal);
-                    if (!['http:', 'https:'].includes(parsedPrimaryImage.protocol)) throw new Error();
-                }
-                urlsAdicionales.forEach(url => {
-                    const parsedUrl = new URL(url);
-                    if (!['http:', 'https:'].includes(parsedUrl.protocol)) throw new Error();
-                });
-            } catch {
-                mostrarToast('La imagen principal y las adicionales deben ser imágenes válidas o URLs que comiencen con http:// o https://.');
-                return;
-            }
-
-            const productoExistente = productoEditandoId === null
-                ? null
-                : productos.find(prod => prod.id === productoEditandoId);
-            if (productoEditandoId !== null && !productoExistente) {
-                mostrarToast("No se encontró el producto que quieres editar.");
-                return;
-            }
-
-            const imagen = previewImagenTemp || productoExistente?.imagen || imgDefault;
-            const botonGuardar = document.getElementById('btn-guardar-producto');
-            const textoBoton = botonGuardar.textContent;
-            botonGuardar.disabled = true;
-            botonGuardar.textContent = 'Guardando...';
-            try {
-                const datosProducto = {
-                    nombre,
-                    precio,
-                    imagen,
-                    imagenes: urlsAdicionales
-                };
-                const respuesta = await solicitarAPI(
-                    productoEditandoId === null
-                        ? '/api/products'
-                        : `/api/products/${encodeURIComponent(productoEditandoId)}`,
-                    {
-                        method: productoEditandoId === null ? 'POST' : 'PATCH',
-                        body: JSON.stringify(datosProducto)
-                    }
-                );
-                const productoGuardado = respuesta.product;
-                if (productoEditandoId === null) {
-                    productos.push(productoGuardado);
-                } else {
-                    productos = productos.map(prod => prod.id === productoGuardado.id ? productoGuardado : prod);
-                }
-
-                renderizarProductos();
-                cerrarModalNuevoProducto();
-                mostrarToast(!estabaEditando
-                    ? "¡Nuevo producto guardado en la tienda!"
-                    : "¡Cambios guardados en la tienda!");
-            } catch (error) {
-                mostrarToast(`No se pudo guardar el producto: ${error.message}`);
-            } finally {
-                botonGuardar.disabled = false;
-                botonGuardar.textContent = textoBoton;
-            }
-        }
-
-        async function eliminarProducto(productoId) {
-            if (usuarioActual?.role !== 'admin') {
-                mostrarToast('Solo la cuenta de administrador puede eliminar productos.');
-                return;
-            }
-
-            const producto = productos.find(prod => prod.id === productoId);
-            if (!producto) {
-                mostrarToast('No se encontró el producto que quieres eliminar.');
-                return;
-            }
-            if (!window.confirm(`¿Seguro que quieres eliminar "${producto.nombre}" de la tienda?`)) return;
-
-            try {
-                await solicitarAPI(`/api/products/${encodeURIComponent(productoId)}`, { method: 'DELETE' });
-                productos = productos.filter(prod => prod.id !== productoId);
-                carrito = carrito.filter(item => item.id !== productoId);
-                guardarCarrito();
-                renderizarProductos();
-                actualizarCarritoUI();
-                mostrarToast(`"${producto.nombre}" se eliminó de la tienda.`);
-            } catch (error) {
-                mostrarToast(`No se pudo eliminar el producto: ${error.message}`);
-            }
-        }
-
         /* --- CONTROL DE INICIO DE SESIÓN Y REGISTRO REDISEÑADO --- */
         async function abrirModalAuth() {
             if (usuarioActual) {
@@ -2442,7 +2018,6 @@
                 }
                 cerrarModalAuth();
                 actualizarUsuarioUI();
-                await cargarProductos();
                 mostrarToast(esRegistro
                     ? `¡Bienvenido/a, ${usuarioActual.nombre}! Cuenta registrada.`
                     : `¡Hola de nuevo, ${usuarioActual.nombre}!`);
@@ -2460,11 +2035,6 @@
             }
         }
 
-        function tienePermisoCrearProducto() {
-            if (!usuarioActual) return false;
-            return usuarioActual.role === 'admin' || !!usuarioActual.canAddProduct;
-        }
-
         function enviarNotificacionEmail(tipoEvento, nombre, email) {
             document.getElementById('fs-subject').value = `ADL Punto Creativo: ${tipoEvento}`;
             document.getElementById('fs-tipo').value = tipoEvento;
@@ -2477,8 +2047,6 @@
         function actualizarUsuarioUI() {
             const userDisplay = document.getElementById('user-display');
             const authBtnText = document.getElementById('auth-btn-text');
-            const btnNuevo = document.getElementById('btn-nuevo-producto');
-            const btnAdmin = document.getElementById('admin-panel-btn');
 
             if (usuarioActual) {
                 document.body.classList.remove('auth-required');
@@ -2486,112 +2054,15 @@
                 userDisplay.innerText = `👤 ${usuarioActual.nombre}`;
                 userDisplay.style.display = 'inline-block';
                 authBtnText.innerText = 'Salir';
-
-                if (tienePermisoCrearProducto()) {
-                    btnNuevo.style.display = 'flex';
-                } else {
-                    btnNuevo.style.display = 'none';
-                }
-
-                if (usuarioActual.role === 'admin') {
-                    btnAdmin.style.display = 'flex';
-                } else {
-                    btnAdmin.style.display = 'none';
-                }
-
             } else {
                 document.body.classList.add('auth-required');
                 document.getElementById('modal-auth').classList.add('active');
                 document.getElementById('login-email').focus();
                 userDisplay.style.display = 'none';
                 authBtnText.innerText = 'Ingresar';
-                btnNuevo.style.display = 'none';
-                btnAdmin.style.display = 'none';
             }
 
             renderizarProductos();
-        }
-
-        function abrirModalPanelAdmin() {
-            if (!usuarioActual || usuarioActual.role !== 'admin') {
-                mostrarToast("Acceso reservado únicamente al Administrador Principal.");
-                return;
-            }
-
-            renderizarListaUsuariosAdmin();
-            document.getElementById('modal-admin').classList.add('active');
-        }
-
-        function cerrarModalPanelAdmin() {
-            document.getElementById('modal-admin').classList.remove('active');
-        }
-
-        async function renderizarListaUsuariosAdmin() {
-            const container = document.getElementById('admin-user-list');
-            container.innerHTML = '';
-
-            try {
-                const respuesta = await solicitarAPI('/api/users');
-                usuariosRegistrados = respuesta.users;
-                if (usuariosRegistrados.length === 0) {
-                    container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">No hay usuarios registrados aún.</p>';
-                    return;
-                }
-
-                usuariosRegistrados.forEach(usr => {
-                    const esAdmin = usr.role === 'admin';
-                    const item = document.createElement('div');
-                    item.className = 'user-list-item';
-
-                    const info = document.createElement('div');
-                    info.className = 'user-info-text';
-                    const nombre = document.createElement('span');
-                    nombre.className = 'user-name';
-                    nombre.textContent = `${usr.nombre}${esAdmin ? ' 👑 (Admin)' : ''}`;
-                    const email = document.createElement('span');
-                    email.className = 'user-email';
-                    email.textContent = usr.email;
-                    info.append(nombre, email);
-
-                    const controles = document.createElement('div');
-                    const label = document.createElement('label');
-                    label.className = 'switch';
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.checked = !!usr.canAddProduct || esAdmin;
-                    checkbox.disabled = esAdmin;
-                    checkbox.addEventListener('change', () => togglePermisoUsuario(usr.id, checkbox.checked));
-                    const slider = document.createElement('span');
-                    slider.className = 'slider';
-                    label.append(checkbox, slider);
-                    controles.appendChild(label);
-                    item.append(info, controles);
-                    container.appendChild(item);
-                });
-            } catch (error) {
-                container.textContent = error.message;
-                mostrarToast(error.message);
-            }
-        }
-
-        async function togglePermisoUsuario(id, permitido) {
-            try {
-                const respuesta = await solicitarAPI(`/api/users/${encodeURIComponent(id)}/permissions`, {
-                    method: 'PATCH',
-                    body: JSON.stringify({ canAddProduct: permitido })
-                });
-                const usuario = respuesta.user;
-                usuariosRegistrados = usuariosRegistrados.map(usr => usr.id === usuario.id ? usuario : usr);
-                mostrarToast(`Permisos actualizados para ${usuario.nombre}`);
-
-                if (usuarioActual && usuarioActual.id === usuario.id) {
-                    usuarioActual = usuario;
-                    actualizarUsuarioUI();
-                }
-            } catch (error) {
-                mostrarToast(error.message);
-                await renderizarListaUsuariosAdmin();
-            }
         }
 
         function mostrarToast(mensaje) {
