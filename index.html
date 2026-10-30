@@ -665,12 +665,52 @@
             align-items: start;
         }
 
+        .product-detail-image-wrap {
+            position: relative;
+        }
+
         .product-detail-main-image {
             width: 100%;
             aspect-ratio: 1 / 1;
             object-fit: contain;
             border-radius: 12px;
             background: #f8fafc;
+        }
+
+        .product-gallery-arrow {
+            position: absolute;
+            top: 50%;
+            display: grid;
+            place-items: center;
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            border: 1px solid rgba(255, 255, 255, 0.85);
+            border-radius: 50%;
+            background: rgba(15, 23, 42, 0.62);
+            color: #fff;
+            font-size: 1.8rem;
+            line-height: 1;
+            cursor: pointer;
+            transform: translateY(-50%);
+            transition: background 0.2s ease;
+        }
+
+        .product-gallery-arrow:hover {
+            background: rgba(15, 23, 42, 0.85);
+        }
+
+        .product-gallery-arrow:focus-visible {
+            outline: 3px solid var(--primary-orange);
+            outline-offset: 2px;
+        }
+
+        .product-gallery-arrow.previous {
+            left: 0.75rem;
+        }
+
+        .product-gallery-arrow.next {
+            right: 0.75rem;
         }
 
         .product-gallery-thumbnails {
@@ -1330,7 +1370,11 @@
             <button type="button" class="close-btn" aria-label="Cerrar detalle del producto" onclick="cerrarDetalleProducto()" style="position: absolute; right: 1.25rem; top: 1rem; z-index: 1;">&times;</button>
             <div class="product-detail-layout">
                 <div>
-                    <img id="product-detail-main-image" class="product-detail-main-image" src="" alt="">
+                    <div class="product-detail-image-wrap">
+                        <img id="product-detail-main-image" class="product-detail-main-image" src="" alt="">
+                        <button type="button" class="product-gallery-arrow previous" aria-label="Ver foto anterior" onclick="cambiarImagenDetalle(-1)" style="display: none;">&#8249;</button>
+                        <button type="button" class="product-gallery-arrow next" aria-label="Ver foto siguiente" onclick="cambiarImagenDetalle(1)" style="display: none;">&#8250;</button>
+                    </div>
                     <div class="product-gallery-thumbnails" id="product-gallery-thumbnails" aria-label="Imágenes del producto"></div>
                 </div>
                 <div class="product-detail-info">
@@ -1433,6 +1477,7 @@
         let tokenSesion = sessionStorage.getItem('adl_token');
         let productoDetalleActualId = null;
         let imagenesDetalleActuales = [];
+        let imagenDetalleIndice = 0;
 
         document.addEventListener('DOMContentLoaded', async () => {
             if (tokenSesion) {
@@ -1591,9 +1636,14 @@
 
             productoDetalleActualId = productoId;
             imagenesDetalleActuales = obtenerImagenesProducto(producto);
+            imagenDetalleIndice = 0;
             document.getElementById('product-detail-title').textContent = producto.nombre;
             document.getElementById('product-detail-price').textContent = `$${producto.precio.toLocaleString('es-AR')}`;
             document.getElementById('product-detail-quantity').value = '1';
+            const mostrarFlechas = imagenesDetalleActuales.length > 1;
+            document.querySelectorAll('.product-gallery-arrow').forEach(button => {
+                button.style.display = mostrarFlechas ? 'grid' : 'none';
+            });
             seleccionarImagenDetalle(0);
             document.getElementById('modal-product-detail').classList.add('active');
         }
@@ -1602,6 +1652,7 @@
             const imagen = imagenesDetalleActuales[indice];
             if (!imagen) return;
 
+            imagenDetalleIndice = indice;
             const mainImage = document.getElementById('product-detail-main-image');
             mainImage.src = imagen;
             mainImage.alt = `${document.getElementById('product-detail-title').textContent} - imagen ${indice + 1}`;
@@ -1631,6 +1682,12 @@
             });
         }
 
+        function cambiarImagenDetalle(cambio) {
+            if (imagenesDetalleActuales.length < 2) return;
+            const nuevoIndice = (imagenDetalleIndice + cambio + imagenesDetalleActuales.length) % imagenesDetalleActuales.length;
+            seleccionarImagenDetalle(nuevoIndice);
+        }
+
         function cambiarCantidadDetalle(cambio) {
             const cantidad = document.getElementById('product-detail-quantity');
             cantidad.value = String(Math.max(1, Number(cantidad.value) + cambio));
@@ -1647,6 +1704,7 @@
             document.getElementById('modal-product-detail').classList.remove('active');
             productoDetalleActualId = null;
             imagenesDetalleActuales = [];
+            imagenDetalleIndice = 0;
         }
 
         function cerrarDetalleProductoAlClickFuera(event) {
