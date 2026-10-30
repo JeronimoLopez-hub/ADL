@@ -613,7 +613,7 @@
 
         .btn-checkout {
             width: 100%;
-            background: #25d366;
+            background: var(--primary-orange);
             color: white;
             border: none;
             padding: 0.9rem;
@@ -630,7 +630,7 @@
         }
 
         .btn-checkout:hover {
-            background: #1eb956;
+            background: var(--primary-orange-hover);
         }
 
         .cart-empty-msg {
@@ -742,38 +742,81 @@
             margin-bottom: 1.25rem;
         }
 
-        .product-payment-box {
+        .payment-choice {
+            display: block;
+            width: 100%;
             padding: 1rem;
-            margin: 1rem 0;
+            margin-top: 0.75rem;
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            background: #f8fafc;
-        }
-
-        .product-payment-box h3 {
-            font-size: 1rem;
-            margin-bottom: 0.55rem;
-        }
-
-        .payment-methods {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .payment-method {
-            padding: 0.35rem 0.7rem;
             background: #fff;
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            font-size: 0.85rem;
+            color: var(--text-main);
+            text-align: left;
             font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
         }
 
-        .payment-note {
-            margin-top: 0.65rem;
+        .payment-choice:hover {
+            border-color: var(--primary-orange);
+            background: var(--orange-light);
+        }
+
+        .payment-choice small {
+            display: block;
+            margin-top: 0.25rem;
             color: var(--text-muted);
-            font-size: 0.8rem;
+            font-size: 0.82rem;
+            font-weight: 400;
+        }
+
+        .payment-alias-box {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 12px;
+            background: var(--orange-light);
+            text-align: center;
+        }
+
+        .payment-alias {
+            display: block;
+            margin: 0.35rem 0 0.75rem;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+            user-select: all;
+        }
+
+        .payment-actions {
+            display: grid;
+            gap: 0.65rem;
+        }
+
+        .btn-payment-secondary {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: #fff;
+            color: var(--text-main);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-payment-whatsapp {
+            width: 100%;
+            padding: 0.85rem;
+            border: none;
+            border-radius: 10px;
+            background: #25d366;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-payment-whatsapp:hover {
+            background: #1eb956;
         }
 
         .product-detail-quantity {
@@ -1252,8 +1295,8 @@
                     <span class="cart-total-label">Total Estimado:</span>
                     <span class="cart-total-amount" id="cart-total">$0</span>
                 </div>
-                <button class="btn-checkout" onclick="enviarPedidoWhatsApp()">
-                    📱 Realizar Pedido por WhatsApp
+                <button class="btn-checkout" onclick="abrirOpcionesPago()">
+                    🛍️ Comprar
                 </button>
             </div>
         </div>
@@ -1371,14 +1414,6 @@
                 <div class="product-detail-info">
                     <h2 id="product-detail-title"></h2>
                     <p class="product-detail-price" id="product-detail-price"></p>
-                    <div class="product-payment-box">
-                        <h3>Medios de pago</h3>
-                        <div class="payment-methods">
-                            <span class="payment-method">Mercado Pago</span>
-                            <span class="payment-method">Efectivo</span>
-                        </div>
-                        <p class="payment-note">El pago se coordina al confirmar tu pedido por WhatsApp. La tienda no procesa cobros en línea.</p>
-                    </div>
                     <div class="product-detail-quantity">
                         <div class="qty-selector" aria-label="Cantidad">
                             <button type="button" class="qty-btn" onclick="cambiarCantidadDetalle(-1)" aria-label="Restar una unidad">-</button>
@@ -1387,6 +1422,38 @@
                         </div>
                         <button type="button" class="btn-add" onclick="agregarDetalleAlCarrito()">🛒 Agregar al carrito</button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="generic-modal" id="modal-payment" role="dialog" aria-modal="true" aria-labelledby="payment-title" onclick="cerrarPagoAlClickFuera(event)">
+        <div class="modal-content">
+            <button type="button" class="close-btn" aria-label="Cerrar opciones de pago" onclick="cerrarOpcionesPago()" style="position: absolute; right: 1.25rem; top: 1rem;">&times;</button>
+            <h2 id="payment-title" style="font-size: 1.4rem; margin: 0 2rem 0.4rem 0;">Elegí cómo pagar</h2>
+            <p style="color: var(--text-muted);">Total del pedido: <strong id="payment-total"></strong></p>
+
+            <div id="payment-method-options">
+                <button type="button" class="payment-choice" onclick="seleccionarPagoMercadoPago()">
+                    💳 Mercado Pago
+                    <small>Transferí al alias y luego enviá el comprobante por WhatsApp.</small>
+                </button>
+                <button type="button" class="payment-choice" onclick="seleccionarPagoEfectivo()">
+                    💵 Efectivo
+                    <small>Coordiná el pago y la entrega por WhatsApp.</small>
+                </button>
+            </div>
+
+            <div id="payment-mercadopago" style="display: none;">
+                <div class="payment-alias-box">
+                    <span>Transferí el total al alias</span>
+                    <strong class="payment-alias">paola.lopez.sj</strong>
+                    <button type="button" class="btn-payment-secondary" onclick="copiarAliasYabrirMercadoPago()">📋 Copiar alias y abrir Mercado Pago</button>
+                </div>
+                <p style="margin-bottom: 0.9rem; color: var(--text-muted); font-size: 0.88rem;">Después de transferir, enviá el comprobante junto con los datos del pedido.</p>
+                <div class="payment-actions">
+                    <button type="button" class="btn-payment-whatsapp" onclick="enviarComprobanteWhatsApp()">📱 Enviar comprobante por WhatsApp</button>
+                    <button type="button" class="btn-payment-secondary" onclick="volverOpcionesPago()">Volver a medios de pago</button>
                 </div>
             </div>
         </div>
@@ -1809,13 +1876,13 @@
             }
         }
 
-        function enviarPedidoWhatsApp() {
+        function obtenerResumenPedidoWhatsApp(introduccion) {
             if (carrito.length === 0) {
                 mostrarToast("Tu carrito está vacío");
-                return;
+                return null;
             }
 
-            let mensaje = "¡Hola ADL Punto Creativo! 👋 Quisiera realizar el siguiente pedido:\n\n";
+            let mensaje = `¡Hola ADL Punto Creativo! 👋 ${introduccion}\n\n`;
             let total = 0;
 
             carrito.forEach(item => {
@@ -1829,8 +1896,75 @@
                 mensaje += `\n*Cliente:* ${usuarioActual.nombre} (${usuarioActual.email})`;
             }
 
-            const url = `https://wa.me/5493498437419?text=${encodeURIComponent(mensaje)}`;
+            return { mensaje, total };
+        }
+
+        function abrirWhatsAppPedido(introduccion) {
+            const pedido = obtenerResumenPedidoWhatsApp(introduccion);
+            if (!pedido) return false;
+
+            const url = `https://wa.me/5493498437419?text=${encodeURIComponent(pedido.mensaje)}`;
             window.open(url, '_blank');
+            return true;
+        }
+
+        function abrirOpcionesPago() {
+            if (!usuarioActual) {
+                document.getElementById('modal-auth').classList.add('active');
+                return;
+            }
+            if (carrito.length === 0) {
+                mostrarToast('Tu carrito está vacío');
+                return;
+            }
+
+            const total = carrito.reduce((suma, item) => suma + item.precio * item.cantidad, 0);
+            document.getElementById('payment-total').textContent = `$${total.toLocaleString('es-AR')}`;
+            document.getElementById('payment-method-options').style.display = 'block';
+            document.getElementById('payment-mercadopago').style.display = 'none';
+            document.getElementById('modal-payment').classList.add('active');
+        }
+
+        function cerrarOpcionesPago() {
+            document.getElementById('modal-payment').classList.remove('active');
+        }
+
+        function cerrarPagoAlClickFuera(event) {
+            if (event.target.id === 'modal-payment') cerrarOpcionesPago();
+        }
+
+        function volverOpcionesPago() {
+            document.getElementById('payment-method-options').style.display = 'block';
+            document.getElementById('payment-mercadopago').style.display = 'none';
+        }
+
+        function seleccionarPagoMercadoPago() {
+            document.getElementById('payment-method-options').style.display = 'none';
+            document.getElementById('payment-mercadopago').style.display = 'block';
+        }
+
+        function seleccionarPagoEfectivo() {
+            const enviado = abrirWhatsAppPedido('Quisiera realizar el siguiente pedido y pagar en efectivo:');
+            if (enviado) cerrarOpcionesPago();
+        }
+
+        async function copiarAliasYabrirMercadoPago() {
+            window.open('https://www.mercadopago.com.ar/', '_blank', 'noopener,noreferrer');
+            try {
+                await navigator.clipboard.writeText('paola.lopez.sj');
+                mostrarToast('Alias copiado. Pégalo en Mercado Pago para realizar la transferencia.');
+            } catch (error) {
+                mostrarToast(`No se pudo copiar automáticamente el alias (${error.message}). Copia paola.lopez.sj y pégalo en Mercado Pago.`);
+            }
+        }
+
+        function enviarComprobanteWhatsApp() {
+            const enviado = abrirWhatsAppPedido('Ya realicé la transferencia por Mercado Pago al alias paola.lopez.sj. Adjunto el comprobante. Estos son los datos de mi pedido:');
+            if (enviado) cerrarOpcionesPago();
+        }
+
+        function enviarPedidoWhatsApp() {
+            abrirWhatsAppPedido('Quisiera realizar el siguiente pedido:');
         }
 
         function abrirModalNuevoProducto() {
