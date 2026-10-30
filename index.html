@@ -444,6 +444,22 @@
             background: var(--orange-soft);
         }
 
+        .btn-delete-product {
+            background: #fff;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            width: 100%;
+            padding: 0.6rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-delete-product:hover {
+            background: #fef2f2;
+            border-color: #dc2626;
+        }
+
         /* Modal Carrito (Sidebar) */
         .cart-modal-overlay {
             position: fixed;
@@ -1515,14 +1531,7 @@
     <script>
         const API_BASE_URL = 'https://adl-auth-api.onrender.com';
 
-        const productosIniciales = [
-            { id: 1, nombre: 'Taza Mágica Personalizada', precio: 7000, imagen: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=500&auto=format&fit=crop&q=60' },
-            { id: 2, nombre: 'Remera Spun Full Print', precio: 14000, imagen: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500&auto=format&fit=crop&q=60' },
-            { id: 3, nombre: 'Mate Pampa Sublimado', precio: 6200, imagen: 'https://images.unsplash.com/photo-1577803645773-f96470509666?w=500&auto=format&fit=crop&q=60' },
-            { id: 4, nombre: 'Llavero de Cuerina Sublimable', precio: 1500, imagen: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=500&auto=format&fit=crop&q=60' }
-        ];
-
-        let productos = JSON.parse(localStorage.getItem('adl_productos')) || productosIniciales;
+        let productos = [];
         let carrito = JSON.parse(localStorage.getItem('adl_carrito')) || [];
         let usuariosRegistrados = [];
         let usuarioActual = null;
@@ -1546,6 +1555,7 @@
                 document.getElementById('auth-status').textContent = 'Inicia sesión o crea una cuenta para entrar a la tienda.';
             }
             actualizarUsuarioUI();
+            if (usuarioActual) await cargarProductos();
             actualizarCarritoUI();
         });
 
@@ -1588,6 +1598,71 @@
                 ...(Array.isArray(producto.imagenes) ? producto.imagenes : [])
             ].filter(imagen => typeof imagen === 'string' && imagen.trim());
             return [...new Set(imagenes)];
+        }
+
+        async function cargarProductos() {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = '<p class="product-grid-empty">Cargando productos...</p>';
+            try {
+                const respuesta = await solicitarAPI('/api/products');
+                productos = respuesta.products;
+                await migrarProductosLocalesSiAdmin();
+                renderizarProductos();
+            } catch (error) {
+                grid.innerHTML = '';
+                const mensaje = document.createElement('p');
+                mensaje.className = 'product-grid-empty';
+                mensaje.textContent = `No se pudieron cargar los productos: ${error.message}`;
+                grid.appendChild(mensaje);
+                mostrarToast(`Error al cargar productos: ${error.message}`);
+            }
+        }
+
+        async function migrarProductosLocalesSiAdmin() {
+            const claveMigracion = 'adl_catalog_migrated_to_mongodb_v1';
+            const catalogoLocal = localStorage.getItem('adl_productos');
+            if (usuarioActual?.role !== 'admin' || !catalogoLocal || localStorage.getItem(claveMigracion)) return;
+
+            let productosLocales;
+            try {
+                productosLocales = JSON.parse(catalogoLocal);
+            } catch (error) {
+                mostrarToast(`No se pudieron leer los productos anteriores guardados en este navegador: ${error.message}`);
+                return;
+            }
+            if (!Array.isArray(productosLocales)) {
+                mostrarToast('No se pudieron importar los productos anteriores: el catálogo local no tiene un formato válido.');
+                return;
+            }
+
+            const nombresExistentes = new Set(productos.map(prod => normalizarNombreProducto(prod.nombre)));
+            try {
+                for (const productoLocal of productosLocales) {
+                    if (!productoLocal || typeof productoLocal.nombre !== 'string'
+                        || nombresExistentes.has(normalizarNombreProducto(productoLocal.nombre))) continue;
+
+                    const imagenesLocales = obtenerImagenesProducto(productoLocal);
+                    const imagen = imagenesLocales[0];
+                    if (!imagen || !Number.isFinite(Number(productoLocal.precio))) {
+                        throw new Error(`El producto "${productoLocal.nombre}" tiene datos incompletos.`);
+                    }
+
+                    const respuesta = await solicitarAPI('/api/products', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            nombre: productoLocal.nombre,
+                            precio: Number(productoLocal.precio),
+                            imagen,
+                            imagenes: imagenesLocales.slice(1, 8)
+                        })
+                    });
+                    productos.push(respuesta.product);
+                    nombresExistentes.add(normalizarNombreProducto(respuesta.product.nombre));
+                }
+                localStorage.setItem(claveMigracion, 'true');
+            } catch (error) {
+                mostrarToast(`No se pudieron importar todos los productos anteriores: ${error.message}`);
+            }
         }
 
         function renderizarProductos() {
@@ -1650,6 +1725,13 @@
                     editButton.textContent = '✏️ Editar producto';
                     editButton.addEventListener('click', () => editarProducto(prod.id));
                     controls.appendChild(editButton);
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.type = 'button';
+                    deleteButton.className = 'btn-delete-product';
+                    deleteButton.textContent = '🗑️ Eliminar producto';
+                    deleteButton.addEventListener('click', () => eliminarProducto(prod.id));
+                    controls.appendChild(deleteButton);
                 }
 
                 const quantity = document.createElement('div');
@@ -1835,33 +1917,72 @@
             totalElement.innerText = `$${totalMonto.toLocaleString('es-AR')}`;
 
             if (carrito.length === 0) {
-                container.innerHTML = `
-                    <div class="cart-empty-msg">
-                        <p style="font-size: 3rem; margin-bottom: 0.5rem;">🛍️</p>
-                        <p style="font-weight: 600;">Tu carrito está vacío</p>
-                        <p style="font-size: 0.85rem; margin-top: 0.2rem;">¡Agrega productos del catálogo!</p>
-                    </div>
-                `;
+                const emptyMessage = document.createElement('div');
+                emptyMessage.className = 'cart-empty-msg';
+                const icon = document.createElement('p');
+                icon.style.fontSize = '3rem';
+                icon.style.marginBottom = '0.5rem';
+                icon.textContent = '🛍️';
+                const title = document.createElement('p');
+                title.style.fontWeight = '600';
+                title.textContent = 'Tu carrito está vacío';
+                const instruction = document.createElement('p');
+                instruction.style.fontSize = '0.85rem';
+                instruction.style.marginTop = '0.2rem';
+                instruction.textContent = '¡Agrega productos del catálogo!';
+                emptyMessage.append(icon, title, instruction);
+                container.replaceChildren(emptyMessage);
                 return;
             }
 
-            container.innerHTML = '';
+            container.replaceChildren();
             carrito.forEach(item => {
                 const itemEl = document.createElement('div');
                 itemEl.className = 'cart-item';
-                itemEl.innerHTML = `
-                    <img src="${item.imagen}" class="cart-item-img" alt="${item.nombre}">
-                    <div class="cart-item-details">
-                        <div class="cart-item-title">${item.nombre}</div>
-                        <div class="cart-item-price">$${(item.precio * item.cantidad).toLocaleString('es-AR')}</div>
-                        <div class="cart-item-controls">
-                            <button class="btn-mini" onclick="modificarCantidadCarrito(${item.id}, -1)">-</button>
-                            <span style="font-size: 0.85rem; font-weight: bold;">${item.cantidad}</span>
-                            <button class="btn-mini" onclick="modificarCantidadCarrito(${item.id}, 1)">+</button>
-                        </div>
-                    </div>
-                    <button class="btn-delete" onclick="eliminarDelCarrito(${item.id})" title="Eliminar">🗑️</button>
-                `;
+                const image = document.createElement('img');
+                image.src = item.imagen;
+                image.className = 'cart-item-img';
+                image.alt = item.nombre;
+
+                const details = document.createElement('div');
+                details.className = 'cart-item-details';
+                const title = document.createElement('div');
+                title.className = 'cart-item-title';
+                title.textContent = item.nombre;
+                const price = document.createElement('div');
+                price.className = 'cart-item-price';
+                price.textContent = `$${(item.precio * item.cantidad).toLocaleString('es-AR')}`;
+
+                const controls = document.createElement('div');
+                controls.className = 'cart-item-controls';
+                const decrease = document.createElement('button');
+                decrease.type = 'button';
+                decrease.className = 'btn-mini';
+                decrease.textContent = '-';
+                decrease.setAttribute('aria-label', `Restar ${item.nombre}`);
+                decrease.addEventListener('click', () => modificarCantidadCarrito(item.id, -1));
+                const quantity = document.createElement('span');
+                quantity.style.fontSize = '0.85rem';
+                quantity.style.fontWeight = 'bold';
+                quantity.textContent = item.cantidad;
+                const increase = document.createElement('button');
+                increase.type = 'button';
+                increase.className = 'btn-mini';
+                increase.textContent = '+';
+                increase.setAttribute('aria-label', `Sumar ${item.nombre}`);
+                increase.addEventListener('click', () => modificarCantidadCarrito(item.id, 1));
+                controls.append(decrease, quantity, increase);
+                details.append(title, price, controls);
+
+                const remove = document.createElement('button');
+                remove.type = 'button';
+                remove.className = 'btn-delete';
+                remove.title = 'Eliminar';
+                remove.setAttribute('aria-label', `Eliminar ${item.nombre}`);
+                remove.textContent = '🗑️';
+                remove.addEventListener('click', () => eliminarDelCarrito(item.id));
+
+                itemEl.append(image, details, remove);
                 container.appendChild(itemEl);
             });
         }
@@ -2022,6 +2143,11 @@
         function previsualizarImagen(e) {
             const file = e.target.files[0];
             if (file) {
+                if (file.size > 3 * 1024 * 1024) {
+                    e.target.value = '';
+                    mostrarToast('La imagen debe pesar 3 MB o menos.');
+                    return;
+                }
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     previewImagenTemp = event.target.result;
@@ -2041,7 +2167,7 @@
             }
         }
 
-        function guardarNuevoProducto(e) {
+        async function guardarNuevoProducto(e) {
             e.preventDefault();
             if (!tienePermisoCrearProducto()) {
                 mostrarToast("Acción no autorizada");
@@ -2052,7 +2178,6 @@
             const precio = parseFloat(document.getElementById('prod-precio').value);
             const imgDefault = 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=500&auto=format&fit=crop&q=60';
             const estabaEditando = productoEditandoId !== null;
-            const productosAnteriores = JSON.stringify(productos);
             const urlsAdicionales = document.getElementById('prod-img-extras').value
                 .split(/\r?\n/)
                 .map(url => url.trim())
@@ -2062,50 +2187,101 @@
                 mostrarToast("Ingresa un nombre y un precio válido para el producto.");
                 return;
             }
+            if (urlsAdicionales.length > 7) {
+                mostrarToast('Puedes agregar hasta 7 imágenes adicionales además de la principal.');
+                return;
+            }
 
             try {
+                const imagenPrincipal = previewImagenTemp
+                    || productos.find(prod => prod.id === productoEditandoId)?.imagen
+                    || imgDefault;
+                if (!imagenPrincipal.startsWith('data:image/')) {
+                    const parsedPrimaryImage = new URL(imagenPrincipal);
+                    if (!['http:', 'https:'].includes(parsedPrimaryImage.protocol)) throw new Error();
+                }
                 urlsAdicionales.forEach(url => {
                     const parsedUrl = new URL(url);
                     if (!['http:', 'https:'].includes(parsedUrl.protocol)) throw new Error();
                 });
             } catch {
-                mostrarToast('Cada imagen adicional debe tener una URL válida que comience con http:// o https://.');
+                mostrarToast('La imagen principal y las adicionales deben ser imágenes válidas o URLs que comiencen con http:// o https://.');
                 return;
             }
 
-            if (productoEditandoId !== null) {
-                const producto = productos.find(prod => prod.id === productoEditandoId);
-                if (!producto) {
-                    mostrarToast("No se encontró el producto que quieres editar.");
-                    return;
-                }
-                producto.nombre = nombre;
-                producto.precio = precio;
-                producto.imagen = previewImagenTemp || producto.imagen || imgDefault;
-                producto.imagenes = [...new Set([producto.imagen, ...urlsAdicionales])];
-            } else {
-                const imagen = previewImagenTemp || imgDefault;
-                productos.push({
-                    id: Date.now(),
-                    nombre: nombre,
-                    precio: precio,
-                    imagen,
-                    imagenes: [...new Set([imagen, ...urlsAdicionales])]
-                });
+            const productoExistente = productoEditandoId === null
+                ? null
+                : productos.find(prod => prod.id === productoEditandoId);
+            if (productoEditandoId !== null && !productoExistente) {
+                mostrarToast("No se encontró el producto que quieres editar.");
+                return;
             }
+
+            const imagen = previewImagenTemp || productoExistente?.imagen || imgDefault;
+            const botonGuardar = document.getElementById('btn-guardar-producto');
+            const textoBoton = botonGuardar.textContent;
+            botonGuardar.disabled = true;
+            botonGuardar.textContent = 'Guardando...';
             try {
-                localStorage.setItem('adl_productos', JSON.stringify(productos));
+                const datosProducto = {
+                    nombre,
+                    precio,
+                    imagen,
+                    imagenes: urlsAdicionales
+                };
+                const respuesta = await solicitarAPI(
+                    productoEditandoId === null
+                        ? '/api/products'
+                        : `/api/products/${encodeURIComponent(productoEditandoId)}`,
+                    {
+                        method: productoEditandoId === null ? 'POST' : 'PATCH',
+                        body: JSON.stringify(datosProducto)
+                    }
+                );
+                const productoGuardado = respuesta.product;
+                if (productoEditandoId === null) {
+                    productos.push(productoGuardado);
+                } else {
+                    productos = productos.map(prod => prod.id === productoGuardado.id ? productoGuardado : prod);
+                }
+
+                renderizarProductos();
+                cerrarModalNuevoProducto();
+                mostrarToast(!estabaEditando
+                    ? "¡Nuevo producto guardado en la tienda!"
+                    : "¡Cambios guardados en la tienda!");
             } catch (error) {
-                productos = JSON.parse(productosAnteriores);
-                mostrarToast(`No se pudieron guardar los productos en este navegador: ${error.message}`);
+                mostrarToast(`No se pudo guardar el producto: ${error.message}`);
+            } finally {
+                botonGuardar.disabled = false;
+                botonGuardar.textContent = textoBoton;
+            }
+        }
+
+        async function eliminarProducto(productoId) {
+            if (!tienePermisoCrearProducto()) {
+                mostrarToast('No tienes permisos para eliminar productos.');
                 return;
             }
 
-            renderizarProductos();
-            cerrarModalNuevoProducto();
-            mostrarToast(!estabaEditando
-                ? "¡Nuevo producto publicado correctamente!"
-                : "¡Cambios guardados correctamente!");
+            const producto = productos.find(prod => prod.id === productoId);
+            if (!producto) {
+                mostrarToast('No se encontró el producto que quieres eliminar.');
+                return;
+            }
+            if (!window.confirm(`¿Seguro que quieres eliminar "${producto.nombre}" de la tienda?`)) return;
+
+            try {
+                await solicitarAPI(`/api/products/${encodeURIComponent(productoId)}`, { method: 'DELETE' });
+                productos = productos.filter(prod => prod.id !== productoId);
+                carrito = carrito.filter(item => item.id !== productoId);
+                guardarCarrito();
+                renderizarProductos();
+                actualizarCarritoUI();
+                mostrarToast(`"${producto.nombre}" se eliminó de la tienda.`);
+            } catch (error) {
+                mostrarToast(`No se pudo eliminar el producto: ${error.message}`);
+            }
         }
 
         /* --- CONTROL DE INICIO DE SESIÓN Y REGISTRO REDISEÑADO --- */
@@ -2227,6 +2403,7 @@
                 }
                 cerrarModalAuth();
                 actualizarUsuarioUI();
+                await cargarProductos();
                 mostrarToast(esRegistro
                     ? `¡Bienvenido/a, ${usuarioActual.nombre}! Cuenta registrada.`
                     : `¡Hola de nuevo, ${usuarioActual.nombre}!`);
