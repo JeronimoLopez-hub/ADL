@@ -41,7 +41,7 @@ app.use(cors({
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.use(express.json({ limit: '5mb' }));
+app.use(express.json({ limit: '10mb' }));
 
 function publicUser(user) {
     return {
@@ -142,7 +142,7 @@ function validateProduct(body) {
     if (!nombre || nombre.length > 120
         || typeof precio !== 'number' || !Number.isFinite(precio) || precio < 0 || precio > 1000000000
         || (!isDataImage && !validImageUrl)
-        || (isDataImage && Buffer.byteLength(imagen, 'utf8') > 4200000)
+        || (isDataImage && Buffer.byteLength(imagen, 'utf8') > 6000000)
         || !Array.isArray(imagenes) || imagenes.length > 8) {
         return null;
     }
@@ -338,7 +338,7 @@ async function start() {
         }
     });
 
-    app.delete('/api/products/:id', requireUser(users), requireProductManager, async (req, res, next) => {
+    app.delete('/api/products/:id', requireUser(users), requireAdmin, async (req, res, next) => {
         try {
             if (!ObjectId.isValid(req.params.id)) {
                 res.status(400).json({ error: 'El identificador del producto no es válido.' });
@@ -418,7 +418,7 @@ async function start() {
         }
 
         if (error.type === 'entity.too.large') {
-            res.status(413).json({ error: 'La solicitud supera el tamaño permitido.' });
+            res.status(413).json({ error: 'La imagen o los datos del producto superan el límite. Prueba con una imagen más pequeña.' });
             return;
         }
 
