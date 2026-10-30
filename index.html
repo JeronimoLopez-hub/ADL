@@ -323,6 +323,16 @@
             position: relative;
         }
 
+        .product-image-trigger {
+            display: block;
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            cursor: zoom-in;
+        }
+
         .product-img {
             width: 100%;
             height: 100%;
@@ -670,6 +680,138 @@
             transform: translateY(0);
         }
 
+        .product-detail-content {
+            max-width: 900px;
+        }
+
+        .product-detail-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr);
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .product-detail-main-image {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: contain;
+            border-radius: 12px;
+            background: #f8fafc;
+        }
+
+        .product-gallery-thumbnails {
+            display: flex;
+            gap: 0.65rem;
+            margin-top: 0.75rem;
+            overflow-x: auto;
+            padding: 2px;
+        }
+
+        .product-gallery-thumbnail {
+            width: 68px;
+            height: 68px;
+            flex: 0 0 auto;
+            padding: 3px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .product-gallery-thumbnail.active {
+            border-color: var(--primary-orange);
+        }
+
+        .product-gallery-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .product-detail-info h2 {
+            font-size: 1.55rem;
+            line-height: 1.25;
+            margin: 0 2rem 0.75rem 0;
+        }
+
+        .product-detail-price {
+            color: var(--text-main);
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1.25rem;
+        }
+
+        .product-payment-box {
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: #f8fafc;
+        }
+
+        .product-payment-box h3 {
+            font-size: 1rem;
+            margin-bottom: 0.55rem;
+        }
+
+        .payment-methods {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .payment-method {
+            padding: 0.35rem 0.7rem;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .payment-note {
+            margin-top: 0.65rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .product-detail-quantity {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin: 1rem 0;
+        }
+
+        .product-detail-quantity .qty-selector {
+            width: max-content;
+        }
+
+        .product-detail-quantity .btn-add {
+            flex: 1;
+        }
+
+        body.auth-required > :not(#modal-auth) {
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        body.auth-required #modal-auth {
+            z-index: 5000;
+            opacity: 1;
+            pointer-events: auto;
+            background: var(--bg-color);
+            backdrop-filter: none;
+        }
+
+        body.auth-required #modal-auth .modal-content {
+            transform: none;
+        }
+
+        body.auth-required #modal-auth .close-btn {
+            display: none;
+        }
+
         .form-group {
             margin-bottom: 1.25rem;
             position: relative;
@@ -988,6 +1130,16 @@
                 background-attachment: scroll;
                 background-size: 100% 100vh;
             }
+            .product-detail-layout {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .product-detail-main-image {
+                max-height: 42vh;
+            }
+            .product-detail-price {
+                font-size: 1.65rem;
+            }
             .nav-links { display: none; }
             .hero h1 { font-size: 1.8rem; }
             .cart-drawer { max-width: 100%; }
@@ -1024,7 +1176,7 @@
         }
     </style>
 </head>
-<body>
+<body class="auth-required">
 
     <!-- Header / Navbar -->
     <header>
@@ -1127,10 +1279,16 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="prod-img">Imagen del Producto</label>
+                    <label for="prod-img">Imagen principal del producto</label>
                     <input type="file" id="prod-img" class="form-control" accept="image/*" onchange="previsualizarImagen(event)">
-                    <small style="color: var(--text-muted); display: block; margin-top: 4px;">O introduce URL de una imagen:</small>
+                    <small style="color: var(--text-muted); display: block; margin-top: 4px;">O introduce la URL de la imagen principal:</small>
                     <input type="url" id="prod-img-url" class="form-control" style="margin-top: 4px;" placeholder="https://ejemplo.com/imagen.jpg" oninput="previsualizarUrl(event)">
+                </div>
+
+                <div class="form-group">
+                    <label for="prod-img-extras">Otras imágenes del producto</label>
+                    <textarea id="prod-img-extras" class="form-control" rows="3" placeholder="Pega una URL por línea"></textarea>
+                    <small style="color: var(--text-muted); display: block; margin-top: 4px;">Se mostrarán como opciones en la galería del producto.</small>
                 </div>
 
                 <div style="text-align: center; margin-bottom: 1rem; display: none;" id="preview-container">
@@ -1143,7 +1301,7 @@
     </div>
 
     <!-- Modal de Autenticación (REDISEÑADO) -->
-    <div class="generic-modal" id="modal-auth">
+    <div class="generic-modal" id="modal-auth" role="dialog" aria-modal="true" aria-labelledby="auth-header-title">
         <div class="modal-content">
             <button class="close-btn" onclick="cerrarModalAuth()" style="position: absolute; right: 1.5rem; top: 1.5rem;">&times;</button>
 
@@ -1199,6 +1357,38 @@
 
                 <button type="submit" class="btn-submit">Crear Mi Cuenta</button>
             </form>
+        </div>
+    </div>
+
+    <div class="generic-modal" id="modal-product-detail" role="dialog" aria-modal="true" aria-labelledby="product-detail-title" onclick="cerrarDetalleProductoAlClickFuera(event)">
+        <div class="modal-content product-detail-content">
+            <button type="button" class="close-btn" aria-label="Cerrar detalle del producto" onclick="cerrarDetalleProducto()" style="position: absolute; right: 1.25rem; top: 1rem; z-index: 1;">&times;</button>
+            <div class="product-detail-layout">
+                <div>
+                    <img id="product-detail-main-image" class="product-detail-main-image" src="" alt="">
+                    <div class="product-gallery-thumbnails" id="product-gallery-thumbnails" aria-label="Imágenes del producto"></div>
+                </div>
+                <div class="product-detail-info">
+                    <h2 id="product-detail-title"></h2>
+                    <p class="product-detail-price" id="product-detail-price"></p>
+                    <div class="product-payment-box">
+                        <h3>Medios de pago</h3>
+                        <div class="payment-methods">
+                            <span class="payment-method">Mercado Pago</span>
+                            <span class="payment-method">Efectivo</span>
+                        </div>
+                        <p class="payment-note">El pago se coordina al confirmar tu pedido por WhatsApp. La tienda no procesa cobros en línea.</p>
+                    </div>
+                    <div class="product-detail-quantity">
+                        <div class="qty-selector" aria-label="Cantidad">
+                            <button type="button" class="qty-btn" onclick="cambiarCantidadDetalle(-1)" aria-label="Restar una unidad">-</button>
+                            <input type="number" id="product-detail-quantity" class="qty-input" value="1" min="1" readonly aria-label="Cantidad seleccionada">
+                            <button type="button" class="qty-btn" onclick="cambiarCantidadDetalle(1)" aria-label="Sumar una unidad">+</button>
+                        </div>
+                        <button type="button" class="btn-add" onclick="agregarDetalleAlCarrito()">🛒 Agregar al carrito</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1272,9 +1462,10 @@
         let tokenSesion = sessionStorage.getItem('adl_token');
         let previewImagenTemp = '';
         let productoEditandoId = null;
+        let productoDetalleActualId = null;
+        let imagenesDetalleActuales = [];
+
         document.addEventListener('DOMContentLoaded', async () => {
-            renderizarProductos();
-            actualizarCarritoUI();
             if (tokenSesion) {
                 try {
                     const respuesta = await solicitarAPI('/api/auth/me');
@@ -1282,10 +1473,13 @@
                 } catch (error) {
                     sessionStorage.removeItem('adl_token');
                     tokenSesion = null;
-                    mostrarToast(`No se pudo recuperar la sesión: ${error.message}`);
+                    document.getElementById('auth-status').textContent = `Tu sesión venció o no pudo recuperarse: ${error.message}`;
                 }
+            } else {
+                document.getElementById('auth-status').textContent = 'Inicia sesión o crea una cuenta para entrar a la tienda.';
             }
             actualizarUsuarioUI();
+            actualizarCarritoUI();
         });
 
         async function solicitarAPI(ruta, opciones = {}) {
@@ -1321,6 +1515,14 @@
                 .toLocaleUpperCase('es');
         }
 
+        function obtenerImagenesProducto(producto) {
+            const imagenes = [
+                producto.imagen,
+                ...(Array.isArray(producto.imagenes) ? producto.imagenes : [])
+            ].filter(imagen => typeof imagen === 'string' && imagen.trim());
+            return [...new Set(imagenes)];
+        }
+
         function renderizarProductos() {
             const grid = document.getElementById('product-grid');
             grid.innerHTML = '';
@@ -1339,32 +1541,155 @@
             }
 
             productosFiltrados.forEach(prod => {
+                const imagenes = obtenerImagenesProducto(prod);
                 const card = document.createElement('div');
                 card.className = 'product-card';
-                card.innerHTML = `
-                    <div class="product-img-wrap">
-                        <img src="${prod.imagen}" alt="${prod.nombre}" class="product-img" onerror="this.src='https://via.placeholder.com/300x200?text=Imagen+no+disponible'">
-                    </div>
-                    <div class="product-info">
-                        <div>
-                            <h3 class="product-title">${prod.nombre}</h3>
-                            <div class="product-price">$${prod.precio.toLocaleString('es-AR')}</div>
-                        </div>
-                        <div class="card-controls">
-                            ${tienePermisoCrearProducto() ? `<button class="btn-edit-product" onclick="editarProducto(${prod.id})">✏️ Editar producto</button>` : ''}
-                            <div class="qty-selector">
-                                <button class="qty-btn" onclick="cambiarCantidadTarjeta(${prod.id}, -1)">-</button>
-                                <input type="number" id="qty-input-${prod.id}" class="qty-input" value="1" min="1" readonly>
-                                <button class="qty-btn" onclick="cambiarCantidadTarjeta(${prod.id}, 1)">+</button>
-                            </div>
-                            <button class="btn-add" onclick="agregarAlCarrito(${prod.id})">
-                                🛒 Agregar al Carrito
-                            </button>
-                        </div>
-                    </div>
-                `;
+
+                const imageWrap = document.createElement('div');
+                imageWrap.className = 'product-img-wrap';
+                const imageTrigger = document.createElement('button');
+                imageTrigger.type = 'button';
+                imageTrigger.className = 'product-image-trigger';
+                imageTrigger.setAttribute('aria-label', `Ver detalles de ${prod.nombre}`);
+                imageTrigger.addEventListener('click', () => abrirDetalleProducto(prod.id));
+                const image = document.createElement('img');
+                image.src = imagenes[0] || '';
+                image.alt = prod.nombre;
+                image.className = 'product-img';
+                image.onerror = () => {
+                    image.onerror = null;
+                    image.src = 'https://via.placeholder.com/300x200?text=Imagen+no+disponible';
+                };
+                imageTrigger.appendChild(image);
+                imageWrap.appendChild(imageTrigger);
+
+                const info = document.createElement('div');
+                info.className = 'product-info';
+                const description = document.createElement('div');
+                const title = document.createElement('h3');
+                title.className = 'product-title';
+                title.textContent = prod.nombre;
+                const price = document.createElement('div');
+                price.className = 'product-price';
+                price.textContent = `$${prod.precio.toLocaleString('es-AR')}`;
+                description.append(title, price);
+
+                const controls = document.createElement('div');
+                controls.className = 'card-controls';
+                if (tienePermisoCrearProducto()) {
+                    const editButton = document.createElement('button');
+                    editButton.type = 'button';
+                    editButton.className = 'btn-edit-product';
+                    editButton.textContent = '✏️ Editar producto';
+                    editButton.addEventListener('click', () => editarProducto(prod.id));
+                    controls.appendChild(editButton);
+                }
+
+                const quantity = document.createElement('div');
+                quantity.className = 'qty-selector';
+                const decrease = document.createElement('button');
+                decrease.type = 'button';
+                decrease.className = 'qty-btn';
+                decrease.textContent = '-';
+                decrease.setAttribute('aria-label', `Restar unidades de ${prod.nombre}`);
+                decrease.addEventListener('click', () => cambiarCantidadTarjeta(prod.id, -1));
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.id = `qty-input-${prod.id}`;
+                input.className = 'qty-input';
+                input.value = '1';
+                input.min = '1';
+                input.readOnly = true;
+                input.setAttribute('aria-label', `Cantidad de ${prod.nombre}`);
+                const increase = document.createElement('button');
+                increase.type = 'button';
+                increase.className = 'qty-btn';
+                increase.textContent = '+';
+                increase.setAttribute('aria-label', `Sumar unidades de ${prod.nombre}`);
+                increase.addEventListener('click', () => cambiarCantidadTarjeta(prod.id, 1));
+                quantity.append(decrease, input, increase);
+
+                const addButton = document.createElement('button');
+                addButton.type = 'button';
+                addButton.className = 'btn-add';
+                addButton.textContent = '🛒 Agregar al Carrito';
+                addButton.addEventListener('click', () => agregarAlCarrito(prod.id));
+                controls.append(quantity, addButton);
+                info.append(description, controls);
+                card.append(imageWrap, info);
                 grid.appendChild(card);
             });
+        }
+
+        function abrirDetalleProducto(productoId) {
+            const producto = productos.find(prod => prod.id === productoId);
+            if (!producto) {
+                mostrarToast('No se encontró el producto seleccionado.');
+                return;
+            }
+
+            productoDetalleActualId = productoId;
+            imagenesDetalleActuales = obtenerImagenesProducto(producto);
+            document.getElementById('product-detail-title').textContent = producto.nombre;
+            document.getElementById('product-detail-price').textContent = `$${producto.precio.toLocaleString('es-AR')}`;
+            document.getElementById('product-detail-quantity').value = '1';
+            seleccionarImagenDetalle(0);
+            document.getElementById('modal-product-detail').classList.add('active');
+        }
+
+        function seleccionarImagenDetalle(indice) {
+            const imagen = imagenesDetalleActuales[indice];
+            if (!imagen) return;
+
+            const mainImage = document.getElementById('product-detail-main-image');
+            mainImage.src = imagen;
+            mainImage.alt = `${document.getElementById('product-detail-title').textContent} - imagen ${indice + 1}`;
+            mainImage.onerror = () => {
+                mainImage.onerror = null;
+                mainImage.src = 'https://via.placeholder.com/600x600?text=Imagen+no+disponible';
+            };
+
+            const thumbnails = document.getElementById('product-gallery-thumbnails');
+            thumbnails.replaceChildren();
+            imagenesDetalleActuales.forEach((url, index) => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = `product-gallery-thumbnail${index === indice ? ' active' : ''}`;
+                button.setAttribute('aria-label', `Ver imagen ${index + 1}`);
+                button.setAttribute('aria-pressed', String(index === indice));
+                button.addEventListener('click', () => seleccionarImagenDetalle(index));
+                const thumbnail = document.createElement('img');
+                thumbnail.src = url;
+                thumbnail.alt = '';
+                thumbnail.onerror = () => {
+                    thumbnail.onerror = null;
+                    thumbnail.src = 'https://via.placeholder.com/68?text=Foto';
+                };
+                button.appendChild(thumbnail);
+                thumbnails.appendChild(button);
+            });
+        }
+
+        function cambiarCantidadDetalle(cambio) {
+            const cantidad = document.getElementById('product-detail-quantity');
+            cantidad.value = String(Math.max(1, Number(cantidad.value) + cambio));
+        }
+
+        function agregarDetalleAlCarrito() {
+            if (productoDetalleActualId === null) return;
+            const cantidad = Number(document.getElementById('product-detail-quantity').value);
+            agregarAlCarrito(productoDetalleActualId, cantidad);
+            cerrarDetalleProducto();
+        }
+
+        function cerrarDetalleProducto() {
+            document.getElementById('modal-product-detail').classList.remove('active');
+            productoDetalleActualId = null;
+            imagenesDetalleActuales = [];
+        }
+
+        function cerrarDetalleProductoAlClickFuera(event) {
+            if (event.target.id === 'modal-product-detail') cerrarDetalleProducto();
         }
 
         function cambiarCantidadTarjeta(prodId, cambio) {
@@ -1374,10 +1699,16 @@
             input.value = val;
         }
 
-        function agregarAlCarrito(prodId) {
+        function agregarAlCarrito(prodId, cantidadSolicitada) {
             const producto = productos.find(p => p.id === prodId);
             const inputQty = document.getElementById(`qty-input-${prodId}`);
-            const cantidad = parseInt(inputQty.value) || 1;
+            if (!producto) {
+                mostrarToast('No se encontró el producto que quieres agregar.');
+                return;
+            }
+            const cantidad = Number.isInteger(cantidadSolicitada) && cantidadSolicitada > 0
+                ? cantidadSolicitada
+                : parseInt(inputQty?.value, 10) || 1;
 
             const itemExistente = carrito.find(item => item.id === prodId);
 
@@ -1389,11 +1720,12 @@
                     nombre: producto.nombre,
                     precio: producto.precio,
                     imagen: producto.imagen,
+                    imagenes: obtenerImagenesProducto(producto),
                     cantidad: cantidad
                 });
             }
 
-            inputQty.value = 1;
+            if (inputQty) inputQty.value = 1;
             guardarCarrito();
             actualizarCarritoUI();
             mostrarToast(`Agregaste ${cantidad}x "${producto.nombre}" al carrito`);
@@ -1511,6 +1843,7 @@
             document.getElementById('titulo-modal-producto').innerText = 'Publicar Nuevo Producto';
             document.getElementById('btn-guardar-producto').innerText = 'Publicar en la Tienda';
             document.getElementById('preview-container').style.display = 'none';
+            document.getElementById('prod-img-extras').value = '';
             previewImagenTemp = '';
             document.getElementById('modal-producto').classList.add('active');
         }
@@ -1532,8 +1865,10 @@
             document.getElementById('prod-precio').value = producto.precio;
             document.getElementById('prod-img').value = '';
             document.getElementById('prod-img-url').value = '';
-            previewImagenTemp = producto.imagen;
-            document.getElementById('img-preview').src = producto.imagen;
+            const imagenes = obtenerImagenesProducto(producto);
+            previewImagenTemp = imagenes[0] || '';
+            document.getElementById('prod-img-extras').value = imagenes.slice(1).join('\n');
+            document.getElementById('img-preview').src = previewImagenTemp;
             document.getElementById('preview-container').style.display = 'block';
             document.getElementById('titulo-modal-producto').innerText = 'Editar Producto';
             document.getElementById('btn-guardar-producto').innerText = 'Guardar Cambios';
@@ -1544,6 +1879,7 @@
             document.getElementById('modal-producto').classList.remove('active');
             document.getElementById('form-nuevo-producto').reset();
             document.getElementById('preview-container').style.display = 'none';
+            document.getElementById('prod-img-extras').value = '';
             previewImagenTemp = '';
             productoEditandoId = null;
             document.getElementById('titulo-modal-producto').innerText = 'Publicar Nuevo Producto';
@@ -1583,9 +1919,24 @@
             const precio = parseFloat(document.getElementById('prod-precio').value);
             const imgDefault = 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=500&auto=format&fit=crop&q=60';
             const estabaEditando = productoEditandoId !== null;
+            const productosAnteriores = JSON.stringify(productos);
+            const urlsAdicionales = document.getElementById('prod-img-extras').value
+                .split(/\r?\n/)
+                .map(url => url.trim())
+                .filter(Boolean);
 
             if (!nombre || !Number.isFinite(precio) || precio < 0) {
                 mostrarToast("Ingresa un nombre y un precio válido para el producto.");
+                return;
+            }
+
+            try {
+                urlsAdicionales.forEach(url => {
+                    const parsedUrl = new URL(url);
+                    if (!['http:', 'https:'].includes(parsedUrl.protocol)) throw new Error();
+                });
+            } catch {
+                mostrarToast('Cada imagen adicional debe tener una URL válida que comience con http:// o https://.');
                 return;
             }
 
@@ -1597,16 +1948,25 @@
                 }
                 producto.nombre = nombre;
                 producto.precio = precio;
-                producto.imagen = previewImagenTemp || producto.imagen;
+                producto.imagen = previewImagenTemp || producto.imagen || imgDefault;
+                producto.imagenes = [...new Set([producto.imagen, ...urlsAdicionales])];
             } else {
+                const imagen = previewImagenTemp || imgDefault;
                 productos.push({
                     id: Date.now(),
                     nombre: nombre,
                     precio: precio,
-                    imagen: previewImagenTemp || imgDefault
+                    imagen,
+                    imagenes: [...new Set([imagen, ...urlsAdicionales])]
                 });
             }
-            localStorage.setItem('adl_productos', JSON.stringify(productos));
+            try {
+                localStorage.setItem('adl_productos', JSON.stringify(productos));
+            } catch (error) {
+                productos = JSON.parse(productosAnteriores);
+                mostrarToast(`No se pudieron guardar los productos en este navegador: ${error.message}`);
+                return;
+            }
 
             renderizarProductos();
             cerrarModalNuevoProducto();
@@ -1637,6 +1997,7 @@
         }
 
         function cerrarModalAuth() {
+            if (document.body.classList.contains('auth-required') && !usuarioActual) return;
             document.getElementById('modal-auth').classList.remove('active');
         }
 
@@ -1648,6 +2009,7 @@
 
             const title = document.getElementById('auth-header-title');
             const subtitle = document.getElementById('auth-header-subtitle');
+            const estadoAuth = document.getElementById('auth-status');
 
             if (modo === 'login') {
                 tabLogin.classList.add('active');
@@ -1657,6 +2019,7 @@
 
                 title.innerText = "¡Bienvenido a ADL!";
                 subtitle.innerText = "Ingresa con tus credenciales para continuar";
+                estadoAuth.textContent = 'Inicia sesión o crea una cuenta para entrar a la tienda.';
             } else {
                 tabRegister.classList.add('active');
                 tabLogin.classList.remove('active');
@@ -1665,6 +2028,7 @@
 
                 title.innerText = "Crear Cuenta Nueva";
                 subtitle.innerText = "Únete para guardar tu información e interactuar";
+                estadoAuth.textContent = 'Crea una cuenta para entrar a la tienda.';
             }
         }
 
@@ -1691,7 +2055,7 @@
                 const passwordConfirm = document.getElementById('reg-password-confirm').value;
 
                 if (password !== passwordConfirm) {
-                    mostrarToast("Las contraseñas no coinciden. Inténtalo de nuevo.");
+                    document.getElementById('auth-status').textContent = 'Las contraseñas no coinciden. Inténtalo de nuevo.';
                     return;
                 }
 
@@ -1734,11 +2098,16 @@
                     ? `¡Bienvenido/a, ${usuarioActual.nombre}! Cuenta registrada.`
                     : `¡Hola de nuevo, ${usuarioActual.nombre}!`);
             } catch (error) {
+                estadoAuth.textContent = error.message;
                 mostrarToast(error.message);
             } finally {
                 botonEnviar.disabled = false;
                 botonEnviar.innerText = textoBoton;
-                estadoAuth.textContent = 'Si el servidor estuvo inactivo, la primera conexión puede tardar hasta un minuto.';
+                if (!usuarioActual) {
+                    estadoAuth.textContent = estadoAuth.textContent || 'Si el servidor estuvo inactivo, la primera conexión puede tardar hasta un minuto.';
+                } else {
+                    estadoAuth.textContent = 'Si el servidor estuvo inactivo, la primera conexión puede tardar hasta un minuto.';
+                }
             }
         }
 
@@ -1763,6 +2132,8 @@
             const btnAdmin = document.getElementById('admin-panel-btn');
 
             if (usuarioActual) {
+                document.body.classList.remove('auth-required');
+                document.getElementById('modal-auth').classList.remove('active');
                 userDisplay.innerText = `👤 ${usuarioActual.nombre}`;
                 userDisplay.style.display = 'inline-block';
                 authBtnText.innerText = 'Salir';
@@ -1780,6 +2151,9 @@
                 }
 
             } else {
+                document.body.classList.add('auth-required');
+                document.getElementById('modal-auth').classList.add('active');
+                document.getElementById('login-email').focus();
                 userDisplay.style.display = 'none';
                 authBtnText.innerText = 'Ingresar';
                 btnNuevo.style.display = 'none';
