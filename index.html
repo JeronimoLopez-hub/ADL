@@ -1882,7 +1882,7 @@
                 return null;
             }
 
-            let mensaje = `¡Hola ADL Punto Creativo! 👋 ${introduccion}\n\n`;
+            let mensaje = `¡Hola ADL Punto Creativo! ${introduccion}\n\n`;
             let total = 0;
 
             carrito.forEach(item => {
@@ -1896,7 +1896,7 @@
                 mensaje += `\n*Cliente:* ${usuarioActual.nombre} (${usuarioActual.email})`;
             }
 
-            return { mensaje, total };
+            return { mensaje: mensaje.replace(/\uFFFD/g, ' '), total };
         }
 
         function abrirWhatsAppPedido(introduccion) {
